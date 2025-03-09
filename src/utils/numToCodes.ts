@@ -1,3 +1,4 @@
+
 // Two-digit mappings from the provided code.
 export const numToWord2 = {
     "0": "номерок",
@@ -622,4 +623,5 @@ export const numToWord2 = {
     "514": "ПуГаЧ",
     "515": "Белая ЖаБа",
     "516": "ПуГаЛо",
-    "517": "ПеГаС",
+    "517": "ПеГаС"
+  };
