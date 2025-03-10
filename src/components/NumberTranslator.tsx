@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { numToWord2, numToWord3 } from "../utils/numToCodes";
 import { useToast } from "@/hooks/use-toast";
@@ -38,7 +37,6 @@ const NumberTranslator: React.FC = () => {
     return `???(${token})`;
   };
 
-  // Function to generate all possible groupings including single digits
   const generateVariableGroupings = (digits: string): string[][] => {
     let results: string[][] = [];
     
@@ -48,20 +46,17 @@ const NumberTranslator: React.FC = () => {
         return;
       }
       
-      // Try adding a single digit
       currentGrouping.push(digits[index]);
       generateCombinations(index + 1, currentGrouping);
       currentGrouping.pop();
       
-      // Try adding a 2-digit group if possible
       if (index + 1 < digits.length) {
         currentGrouping.push(digits.slice(index, index + 2));
         generateCombinations(index + 2, currentGrouping);
         currentGrouping.pop();
       }
       
-      // Try adding a 3-digit group if enabled and possible
-      if (useThreeDigits && index + 2 < digits.length) {
+      if (index + 2 < digits.length && useThreeDigits) {
         currentGrouping.push(digits.slice(index, index + 3));
         generateCombinations(index + 3, currentGrouping);
         currentGrouping.pop();
@@ -113,7 +108,19 @@ const NumberTranslator: React.FC = () => {
     return results;
   };
 
+  const containsSeparators = (input: string): boolean => {
+    return /[-\s.,;:|/\\]/.test(input);
+  };
+
+  const extractCustomTokens = (input: string): string[] => {
+    const cleanedInput = input.replace(/[^\d\-\s.,;:|/\\]/g, "");
+    return cleanedInput.split(/[-\s.,;:|/\\]+/).filter(token => token.length > 0);
+  };
+
   const processInput = (raw: string) => {
+    let variationsList = [];
+    
+    const hasSeparators = containsSeparators(raw);
     const digitsOnly = raw.replace(/\D+/g, "");
     
     if (digitsOnly.length === 0) {
@@ -125,25 +132,43 @@ const NumberTranslator: React.FC = () => {
       return [];
     }
     
-    // Use the variable groupings function to get all possible combinations
+    if (hasSeparators) {
+      const customTokens = extractCustomTokens(raw);
+      if (customTokens.length > 0) {
+        const translation = customTokens.map(translateToken).join(" ");
+        const groupingDisplay = customTokens.join("-");
+        variationsList.push({ 
+          tokens: customTokens, 
+          translation, 
+          groupingDisplay,
+          isCustom: true
+        });
+      }
+    }
+    
     const groupings = generateVariableGroupings(digitsOnly);
     
-    const variationsList = groupings.map((tokens) => {
+    const autoVariationsList = groupings.map((tokens) => {
       const translation = tokens.map(translateToken).join(" ");
       const groupingDisplay = tokens.join("-");
-      return { tokens, translation, groupingDisplay };
+      return { 
+        tokens, 
+        translation, 
+        groupingDisplay,
+        isCustom: false
+      };
     });
     
-    variationsList.sort((a, b) => {
-      // First sort by number of "???" in the translation (fewer is better)
+    autoVariationsList.sort((a, b) => {
       const aUnknown = (a.translation.match(/\?\?\?/g) || []).length;
       const bUnknown = (b.translation.match(/\?\?\?/g) || []).length;
       
       if (aUnknown !== bUnknown) return aUnknown - bUnknown;
       
-      // Then sort by translation length (shorter is better)
       return a.translation.length - b.translation.length;
     });
+    
+    variationsList = [...variationsList, ...autoVariationsList];
     
     return variationsList;
   };
@@ -166,9 +191,14 @@ const NumberTranslator: React.FC = () => {
       if (newVariations.length > 0) {
         setVariations(newVariations);
         setDisplayCount(Math.min(10, newVariations.length));
+        
+        const customGroupingExists = newVariations.some(v => v.isCustom === true);
+        
         toast({
           title: "Translation complete",
-          description: `Found ${newVariations.length} possible variations`,
+          description: customGroupingExists 
+            ? `Using your custom separators for the first translation. Found ${newVariations.length - 1} additional variations.`
+            : `Found ${newVariations.length} possible variations`,
         });
       } else {
         toast({
@@ -210,7 +240,7 @@ const NumberTranslator: React.FC = () => {
             <input
               className="w-full h-14 px-5 rounded-xl border-2 border-secondary bg-white text-foreground text-lg placeholder:text-muted-foreground focus-ring transition-all-custom"
               type="text"
-              placeholder="Enter numbers..."
+              placeholder="Enter numbers (use - . , | / or spaces as separators)..."
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               onKeyPress={handleKeyPress}
@@ -254,9 +284,16 @@ const NumberTranslator: React.FC = () => {
             {variations.slice(0, displayCount).map((variation, index) => (
               <div 
                 key={index} 
-                className="p-5 rounded-xl bg-secondary border border-border animate-fade-in transition-all-custom hover:shadow-md"
+                className={`p-5 rounded-xl ${variation.isCustom 
+                  ? 'bg-accent/10 border-2 border-accent animate-pulse-once' 
+                  : 'bg-secondary border border-border'} animate-fade-in transition-all-custom hover:shadow-md`}
                 style={{ animationDelay: `${index * 100}ms` }}
               >
+                {variation.isCustom && (
+                  <div className="text-xs font-medium text-accent mb-1">
+                    Using your custom separators
+                  </div>
+                )}
                 <div className="text-sm font-medium text-muted-foreground mb-2">
                   Grouping: {variation.groupingDisplay}
                 </div>
