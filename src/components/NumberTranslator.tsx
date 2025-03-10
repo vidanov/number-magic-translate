@@ -7,12 +7,13 @@ const NumberTranslator: React.FC = () => {
   const [variations, setVariations] = useState<{ tokens: string[]; translation: string; groupingDisplay: string }[]>([]);
   const [displayCount, setDisplayCount] = useState<number>(3);
   const [isTranslating, setIsTranslating] = useState<boolean>(false);
+  const [useThreeDigits, setUseThreeDigits] = useState<boolean>(true);
   const variationsRef = useRef<HTMLDivElement>(null);
 
   const translateToken = (token: string): string => {
     if (token.length === 2) {
       return numToWord2[token] || numToWord2[token.padStart(2, "0")] || `???(${token})`;
-    } else if (token.length === 3) {
+    } else if (token.length === 3 && useThreeDigits) {
       return numToWord3[token] || `???(${token})`;
     }
     return `???(${token})`;
@@ -30,7 +31,7 @@ const NumberTranslator: React.FC = () => {
         helper(index + 2, current);
         current.pop();
       }
-      if (index + 3 <= digits.length) {
+      if (index + 3 <= digits.length && useThreeDigits) {
         current.push(digits.slice(index, index + 3));
         helper(index + 3, current);
         current.pop();
@@ -109,6 +110,20 @@ const NumberTranslator: React.FC = () => {
               onKeyPress={handleKeyPress}
               aria-label="Enter numbers to translate"
             />
+          </div>
+          
+          {/* 3-digit codes toggle */}
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="use-three-digits"
+              checked={useThreeDigits}
+              onChange={(e) => setUseThreeDigits(e.target.checked)}
+              className="rounded border-secondary text-accent h-5 w-5 focus:ring-2 focus:ring-accent"
+            />
+            <label htmlFor="use-three-digits" className="text-foreground cursor-pointer select-none">
+              Use 3-digit codes in translation
+            </label>
           </div>
           
           <button
