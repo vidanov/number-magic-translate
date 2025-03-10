@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { numToWord2, numToWord3 } from "../utils/numToCodes";
 import { useToast } from "@/hooks/use-toast";
@@ -17,6 +18,9 @@ const NumberTranslator: React.FC = () => {
       return numToWord2[paddedToken] || `???(${token})`;
     } else if (token.length === 3 && useThreeDigits) {
       return numToWord3[token] || `???(${token})`;
+    } else if (token.length === 1) {
+      const paddedToken = token.padStart(2, "0");
+      return numToWord2[paddedToken] || `???(${token})`;
     } else if (!useThreeDigits) {
       if (token.length % 2 !== 0) {
         const firstDigit = token.slice(0, 1);
@@ -32,6 +36,40 @@ const NumberTranslator: React.FC = () => {
       }
     }
     return `???(${token})`;
+  };
+
+  // Function to generate all possible groupings including single digits
+  const generateVariableGroupings = (digits: string): string[][] => {
+    let results: string[][] = [];
+    
+    const generateCombinations = (index: number, currentGrouping: string[] = []) => {
+      if (index === digits.length) {
+        results.push([...currentGrouping]);
+        return;
+      }
+      
+      // Try adding a single digit
+      currentGrouping.push(digits[index]);
+      generateCombinations(index + 1, currentGrouping);
+      currentGrouping.pop();
+      
+      // Try adding a 2-digit group if possible
+      if (index + 1 < digits.length) {
+        currentGrouping.push(digits.slice(index, index + 2));
+        generateCombinations(index + 2, currentGrouping);
+        currentGrouping.pop();
+      }
+      
+      // Try adding a 3-digit group if enabled and possible
+      if (useThreeDigits && index + 2 < digits.length) {
+        currentGrouping.push(digits.slice(index, index + 3));
+        generateCombinations(index + 3, currentGrouping);
+        currentGrouping.pop();
+      }
+    };
+    
+    generateCombinations(0);
+    return results;
   };
 
   const generateGroupings = (digits: string): string[][] => {
@@ -87,7 +125,8 @@ const NumberTranslator: React.FC = () => {
       return [];
     }
     
-    const groupings = generateGroupings(digitsOnly);
+    // Use the variable groupings function to get all possible combinations
+    const groupings = generateVariableGroupings(digitsOnly);
     
     const variationsList = groupings.map((tokens) => {
       const translation = tokens.map(translateToken).join(" ");
@@ -95,7 +134,16 @@ const NumberTranslator: React.FC = () => {
       return { tokens, translation, groupingDisplay };
     });
     
-    variationsList.sort((a, b) => a.translation.length - b.translation.length);
+    variationsList.sort((a, b) => {
+      // First sort by number of "???" in the translation (fewer is better)
+      const aUnknown = (a.translation.match(/\?\?\?/g) || []).length;
+      const bUnknown = (b.translation.match(/\?\?\?/g) || []).length;
+      
+      if (aUnknown !== bUnknown) return aUnknown - bUnknown;
+      
+      // Then sort by translation length (shorter is better)
+      return a.translation.length - b.translation.length;
+    });
     
     return variationsList;
   };
@@ -117,7 +165,7 @@ const NumberTranslator: React.FC = () => {
       
       if (newVariations.length > 0) {
         setVariations(newVariations);
-        setDisplayCount(3);
+        setDisplayCount(Math.min(10, newVariations.length));
         toast({
           title: "Translation complete",
           description: `Found ${newVariations.length} possible variations`,
@@ -135,7 +183,7 @@ const NumberTranslator: React.FC = () => {
   };
 
   const handleShowMore = () => {
-    setDisplayCount((prev) => prev + 3);
+    setDisplayCount((prev) => Math.min(prev + 10, variations.length));
   };
   
   useEffect(() => {
@@ -199,7 +247,7 @@ const NumberTranslator: React.FC = () => {
           className="glass rounded-2xl p-6 sm:p-8 animate-slide-up"
         >
           <h2 className="text-xl font-semibold mb-6 text-gradient">
-            Translation Variations
+            Translation Variations ({variations.length} found)
           </h2>
           
           <div className="space-y-4">
