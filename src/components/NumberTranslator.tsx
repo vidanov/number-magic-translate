@@ -1,6 +1,6 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { numToWord2, numToWord3 } from "../utils/numToCodes";
+import { useToast } from "@/hooks/use-toast";
 
 const NumberTranslator: React.FC = () => {
   const [inputText, setInputText] = useState<string>("");
@@ -9,18 +9,52 @@ const NumberTranslator: React.FC = () => {
   const [isTranslating, setIsTranslating] = useState<boolean>(false);
   const [useThreeDigits, setUseThreeDigits] = useState<boolean>(true);
   const variationsRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
 
   const translateToken = (token: string): string => {
-    if (token.length === 2) {
-      return numToWord2[token] || numToWord2[token.padStart(2, "0")] || `???(${token})`;
+    if (token.length === 2 || (token.length <= 2 && !useThreeDigits)) {
+      const paddedToken = token.padStart(2, "0");
+      return numToWord2[paddedToken] || `???(${token})`;
     } else if (token.length === 3 && useThreeDigits) {
       return numToWord3[token] || `???(${token})`;
+    } else if (!useThreeDigits) {
+      if (token.length % 2 !== 0) {
+        const firstDigit = token.slice(0, 1);
+        const rest = token.slice(1);
+        return translateToken(firstDigit) + " " + translateToken(rest);
+      } else {
+        const first = token.slice(0, 2);
+        const rest = token.slice(2);
+        if (rest.length === 0) {
+          return translateToken(first);
+        }
+        return translateToken(first) + " " + translateToken(rest);
+      }
     }
     return `???(${token})`;
   };
 
   const generateGroupings = (digits: string): string[][] => {
     let results: string[][] = [];
+    
+    if (!useThreeDigits) {
+      const segments: string[] = [];
+      let i = 0;
+      
+      if (digits.length % 2 !== 0) {
+        segments.push(digits.slice(0, 1));
+        i = 1;
+      }
+      
+      while (i < digits.length) {
+        segments.push(digits.slice(i, i + 2));
+        i += 2;
+      }
+      
+      results.push(segments);
+      return results;
+    }
+    
     const helper = (index: number, current: string[]) => {
       if (index === digits.length) {
         results.push([...current]);
@@ -43,31 +77,59 @@ const NumberTranslator: React.FC = () => {
 
   const processInput = (raw: string) => {
     const digitsOnly = raw.replace(/\D+/g, "");
+    
+    if (digitsOnly.length === 0) {
+      toast({
+        title: "No digits found",
+        description: "Please enter some numbers to translate",
+        variant: "destructive",
+      });
+      return [];
+    }
+    
     const groupings = generateGroupings(digitsOnly);
     
-    // Sort by shortest translation length
     const variationsList = groupings.map((tokens) => {
       const translation = tokens.map(translateToken).join(" ");
       const groupingDisplay = tokens.join("-");
       return { tokens, translation, groupingDisplay };
     });
     
-    // Sort by translation length (shortest first)
     variationsList.sort((a, b) => a.translation.length - b.translation.length);
     
     return variationsList;
   };
 
   const handleTranslate = () => {
-    if (!inputText.trim()) return;
+    if (!inputText.trim()) {
+      toast({
+        title: "Input is empty",
+        description: "Please enter some numbers to translate",
+        variant: "destructive",
+      });
+      return;
+    }
     
     setIsTranslating(true);
     
-    // Use setTimeout to allow animation to show
     setTimeout(() => {
       const newVariations = processInput(inputText);
-      setVariations(newVariations);
-      setDisplayCount(3);
+      
+      if (newVariations.length > 0) {
+        setVariations(newVariations);
+        setDisplayCount(3);
+        toast({
+          title: "Translation complete",
+          description: `Found ${newVariations.length} possible variations`,
+        });
+      } else {
+        toast({
+          title: "No translations found",
+          description: "Try a different input or enable 3-digit codes",
+          variant: "destructive",
+        });
+      }
+      
       setIsTranslating(false);
     }, 600);
   };
@@ -76,14 +138,12 @@ const NumberTranslator: React.FC = () => {
     setDisplayCount((prev) => prev + 3);
   };
   
-  // Auto-scroll when new variations are added
   useEffect(() => {
     if (variations.length > 0 && variationsRef.current) {
       variationsRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
   }, [variations]);
 
-  // Handle keyboard submit
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       handleTranslate();
@@ -93,12 +153,10 @@ const NumberTranslator: React.FC = () => {
   return (
     <div className="w-full max-w-3xl mx-auto px-4 py-12 sm:px-6">
       <div className="glass rounded-2xl p-6 sm:p-8 mb-8 animate-fade-in">
-        {/* Title with gradient text */}
         <h1 className="text-3xl sm:text-4xl font-bold text-gradient mb-8 text-center">
           Number Translator
         </h1>
         
-        {/* Input + Button */}
         <div className="space-y-6">
           <div className="relative">
             <input
@@ -112,7 +170,6 @@ const NumberTranslator: React.FC = () => {
             />
           </div>
           
-          {/* 3-digit codes toggle */}
           <div className="flex items-center space-x-2">
             <input
               type="checkbox"
@@ -136,7 +193,6 @@ const NumberTranslator: React.FC = () => {
         </div>
       </div>
       
-      {/* Variations Section */}
       {variations.length > 0 && (
         <div 
           ref={variationsRef}
