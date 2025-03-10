@@ -1,26 +1,27 @@
+
 import React, { useState, useRef, useEffect } from "react";
-import { numToWord2, numToWord3 } from "../utils/numToCodes";
+import { languages, Language } from "../utils/numToCodes";
 import { useToast } from "@/hooks/use-toast";
+import { Globe } from "lucide-react";
 
 const NumberTranslator: React.FC = () => {
   const [inputText, setInputText] = useState<string>("");
-  const [variations, setVariations] = useState<{ tokens: string[]; translation: string; groupingDisplay: string }[]>([]);
+  const [variations, setVariations] = useState<{ tokens: string[]; translation: string; groupingDisplay: string; isCustom?: boolean }[]>([]);
   const [displayCount, setDisplayCount] = useState<number>(3);
   const [isTranslating, setIsTranslating] = useState<boolean>(false);
-  const [useThreeDigits, setUseThreeDigits] = useState<boolean>(true);
+  const [selectedLanguage, setSelectedLanguage] = useState<Language>(languages[0]);
   const variationsRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
   const translateToken = (token: string): string => {
-    if (token.length === 2 || (token.length <= 2 && !useThreeDigits)) {
-      const paddedToken = token.padStart(2, "0");
-      return numToWord2[paddedToken] || `???(${token})`;
-    } else if (token.length === 3 && useThreeDigits) {
-      return numToWord3[token] || `???(${token})`;
+    // 2-digit translation
+    if (token.length === 2) {
+      return selectedLanguage.dictionary[token] || `???(${token})`;
     } else if (token.length === 1) {
       const paddedToken = token.padStart(2, "0");
-      return numToWord2[paddedToken] || `???(${token})`;
-    } else if (!useThreeDigits) {
+      return selectedLanguage.dictionary[paddedToken] || `???(${token})`;
+    } else {
+      // Handle longer tokens by splitting them
       if (token.length % 2 !== 0) {
         const firstDigit = token.slice(0, 1);
         const rest = token.slice(1);
@@ -34,7 +35,6 @@ const NumberTranslator: React.FC = () => {
         return translateToken(first) + " " + translateToken(rest);
       }
     }
-    return `???(${token})`;
   };
 
   const generateVariableGroupings = (digits: string): string[][] => {
@@ -46,65 +46,20 @@ const NumberTranslator: React.FC = () => {
         return;
       }
       
+      // Single digit
       currentGrouping.push(digits[index]);
       generateCombinations(index + 1, currentGrouping);
       currentGrouping.pop();
       
+      // Two digits
       if (index + 1 < digits.length) {
         currentGrouping.push(digits.slice(index, index + 2));
         generateCombinations(index + 2, currentGrouping);
         currentGrouping.pop();
       }
-      
-      if (index + 2 < digits.length && useThreeDigits) {
-        currentGrouping.push(digits.slice(index, index + 3));
-        generateCombinations(index + 3, currentGrouping);
-        currentGrouping.pop();
-      }
     };
     
     generateCombinations(0);
-    return results;
-  };
-
-  const generateGroupings = (digits: string): string[][] => {
-    let results: string[][] = [];
-    
-    if (!useThreeDigits) {
-      const segments: string[] = [];
-      let i = 0;
-      
-      if (digits.length % 2 !== 0) {
-        segments.push(digits.slice(0, 1));
-        i = 1;
-      }
-      
-      while (i < digits.length) {
-        segments.push(digits.slice(i, i + 2));
-        i += 2;
-      }
-      
-      results.push(segments);
-      return results;
-    }
-    
-    const helper = (index: number, current: string[]) => {
-      if (index === digits.length) {
-        results.push([...current]);
-        return;
-      }
-      if (index + 2 <= digits.length) {
-        current.push(digits.slice(index, index + 2));
-        helper(index + 2, current);
-        current.pop();
-      }
-      if (index + 3 <= digits.length && useThreeDigits) {
-        current.push(digits.slice(index, index + 3));
-        helper(index + 3, current);
-        current.pop();
-      }
-    };
-    helper(0, []);
     return results;
   };
 
@@ -203,7 +158,7 @@ const NumberTranslator: React.FC = () => {
       } else {
         toast({
           title: "No translations found",
-          description: "Try a different input or enable 3-digit codes",
+          description: "Try a different input",
           variant: "destructive",
         });
       }
@@ -227,9 +182,14 @@ const NumberTranslator: React.FC = () => {
       handleTranslate();
     }
   };
+
+  const handleLanguageChange = (language: Language) => {
+    setSelectedLanguage(language);
+    setVariations([]);
+  };
   
   return (
-    <div className="w-full max-w-3xl mx-auto px-4 py-12 sm:px-6">
+    <div className="w-full max-w-3xl mx-auto px-4 py-6 sm:px-6">
       <div className="glass rounded-2xl p-6 sm:p-8 mb-8 animate-fade-in">
         <h1 className="text-3xl sm:text-4xl font-bold text-gradient mb-8 text-center">
           Number Translator
@@ -248,17 +208,26 @@ const NumberTranslator: React.FC = () => {
             />
           </div>
           
-          <div className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              id="use-three-digits"
-              checked={useThreeDigits}
-              onChange={(e) => setUseThreeDigits(e.target.checked)}
-              className="rounded border-secondary text-accent h-5 w-5 focus:ring-2 focus:ring-accent"
-            />
-            <label htmlFor="use-three-digits" className="text-foreground cursor-pointer select-none">
-              Use 3-digit codes in translation
-            </label>
+          <div className="flex items-center justify-between">
+            <div className="relative inline-block">
+              <div className="flex items-center">
+                <Globe className="mr-2 h-5 w-5 text-accent" />
+                <select 
+                  value={selectedLanguage.id}
+                  onChange={(e) => {
+                    const language = languages.find(lang => lang.id === e.target.value);
+                    if (language) handleLanguageChange(language);
+                  }}
+                  className="bg-transparent pr-8 py-1 focus:outline-none text-foreground cursor-pointer"
+                >
+                  {languages.map((lang) => (
+                    <option key={lang.id} value={lang.id}>
+                      {lang.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
           </div>
           
           <button
