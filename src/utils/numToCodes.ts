@@ -1,4 +1,3 @@
-
 // Russian number to word mapping (original)
 export const ruNumToWord = {
   "0": "номерок",
@@ -208,14 +207,14 @@ export const enNumToWord = {
   "99": "pipe"
 };
 
-// German number to word mapping
+// German number to word mapping (fixed encoding)
 export const deNumToWord = {
-  "00": "SoÃŸe",
+  "00": "Soße",
   "01": "Seide",
   "02": "Sahne",
   "03": "Sumo",
-  "04": "SÃ¤ure",
-  "05": "SÃ¤ule",
+  "04": "Säure",
+  "05": "Säule",
   "06": "Sushi",
   "07": "Socke",
   "08": "Seife",
@@ -228,7 +227,7 @@ export const deNumToWord = {
   "15": "Tal",
   "16": "Tasche",
   "17": "Theke",
-  "18": "TÃœV",
+  "18": "TÜV",
   "19": "Taube",
   "20": "Nase",
   "21": "Note",
@@ -247,7 +246,7 @@ export const deNumToWord = {
   "34": "Meer",
   "35": "Mehl",
   "36": "Muschi",
-  "37": "MÃ¼cke",
+  "37": "Mücke",
   "38": "Mofa",
   "39": "Mopp",
   "40": "Rose",
@@ -280,7 +279,7 @@ export const deNumToWord = {
   "67": "Scheck",
   "68": "Schaf",
   "69": "Scheibe",
-  "70": "KÃ¤se",
+  "70": "Käse",
   "71": "Kette",
   "72": "Kinn",
   "73": "Kamm",
@@ -304,7 +303,7 @@ export const deNumToWord = {
   "91": "Bett",
   "92": "Bahn",
   "93": "Baum",
-  "94": "BÃ¤r",
+  "94": "Bär",
   "95": "Ball",
   "96": "Buch",
   "97": "Pauke",
