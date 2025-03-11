@@ -107,7 +107,7 @@ export const ruNumToWord = {
 // English number to word mapping
 export const enNumToWord = {
   "0": "sauce",
-  "00": "sauce",
+  "00": "Zeus",
   "01": "seed",
   "02": "sun",
   "03": "sumo",
@@ -212,7 +212,7 @@ export const enNumToWord = {
 // German number to word mapping (fixed encoding)
 export const deNumToWord = {
   "0": "Soße",
-  "00": "Soße",
+  "00": "Zeus",
   "01": "Seide",
   "02": "Sahne",
   "03": "Sumo",

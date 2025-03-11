@@ -1,7 +1,9 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { languages, Language } from "../utils/numToCodes";
 import { useToast } from "@/hooks/use-toast";
-import { Globe } from "lucide-react";
+import { Globe, Lightbulb } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const NumberTranslator: React.FC = () => {
   const [inputText, setInputText] = useState<string>("");
@@ -9,6 +11,7 @@ const NumberTranslator: React.FC = () => {
   const [displayCount, setDisplayCount] = useState<number>(3);
   const [isTranslating, setIsTranslating] = useState<boolean>(false);
   const [selectedLanguage, setSelectedLanguage] = useState<Language>(languages[0]);
+  const [hoveredWord, setHoveredWord] = useState<number | null>(null);
   const variationsRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -42,9 +45,21 @@ const NumberTranslator: React.FC = () => {
   const generateVariableGroupings = (digits: string): string[][] => {
     let results: string[][] = [];
     
+    // Function to check if a grouping would result in a duplicate translation
+    const isDuplicateTranslation = (newGrouping: string[]): boolean => {
+      const newTranslation = newGrouping.map(translateToken).join(" ");
+      return results.some(existingGrouping => {
+        const existingTranslation = existingGrouping.map(translateToken).join(" ");
+        return existingTranslation === newTranslation;
+      });
+    };
+    
     const generateCombinations = (index: number, currentGrouping: string[] = []) => {
       if (index === digits.length) {
-        results.push([...currentGrouping]);
+        // Check if this grouping would produce a duplicate translation
+        if (!isDuplicateTranslation(currentGrouping)) {
+          results.push([...currentGrouping]);
+        }
         return;
       }
       
@@ -55,9 +70,20 @@ const NumberTranslator: React.FC = () => {
       
       // Two digits
       if (index + 1 < digits.length) {
-        currentGrouping.push(digits.slice(index, index + 2));
-        generateCombinations(index + 2, currentGrouping);
-        currentGrouping.pop();
+        const twoDigits = digits.slice(index, index + 2);
+        
+        // Special case for "00" to avoid both "0-0" and "00" groupings generating the same word
+        if (twoDigits === "00" && index + 2 <= digits.length) {
+          currentGrouping.push(twoDigits);
+          generateCombinations(index + 2, currentGrouping);
+          currentGrouping.pop();
+        } 
+        // Regular two-digit case
+        else {
+          currentGrouping.push(twoDigits);
+          generateCombinations(index + 2, currentGrouping);
+          currentGrouping.pop();
+        }
       }
     };
     
@@ -196,6 +222,78 @@ const NumberTranslator: React.FC = () => {
     setSelectedLanguage(language);
     setVariations([]);
   };
+
+  // Function to render a translation with interactive tooltips
+  const renderHighlightedTranslation = (variation: { tokens: string[]; translation: string }) => {
+    // Split the translation into words
+    const words = variation.translation.split(" ");
+    
+    // Map to track which word corresponds to which token
+    const wordToTokenMap = new Map<number, string>();
+    
+    // Build the mapping
+    let wordIndex = 0;
+    variation.tokens.forEach(token => {
+      const translatedToken = translateToken(token);
+      const wordCount = translatedToken.split(" ").length;
+      
+      for (let i = 0; i < wordCount; i++) {
+        wordToTokenMap.set(wordIndex + i, token);
+      }
+      
+      wordIndex += wordCount;
+    });
+    
+    // Create background colors for different tokens
+    const tokenColors = new Map<string, string>();
+    const colorPalette = [
+      "bg-red-100 hover:bg-red-200",
+      "bg-blue-100 hover:bg-blue-200",
+      "bg-green-100 hover:bg-green-200",
+      "bg-yellow-100 hover:bg-yellow-200",
+      "bg-purple-100 hover:bg-purple-200",
+      "bg-pink-100 hover:bg-pink-200",
+      "bg-indigo-100 hover:bg-indigo-200",
+      "bg-orange-100 hover:bg-orange-200",
+      "bg-teal-100 hover:bg-teal-200",
+      "bg-cyan-100 hover:bg-cyan-200",
+    ];
+    
+    variation.tokens.forEach((token, index) => {
+      tokenColors.set(token, colorPalette[index % colorPalette.length]);
+    });
+    
+    return (
+      <div className="flex flex-wrap gap-1">
+        {words.map((word, index) => {
+          const token = wordToTokenMap.get(index);
+          const color = token ? tokenColors.get(token) : "";
+          
+          return (
+            <TooltipProvider key={index} delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span 
+                    className={`px-1 py-0.5 rounded transition-colors cursor-pointer font-medium ${color || "bg-gray-100 hover:bg-gray-200"} ${hoveredWord === index ? "ring-2 ring-accent" : ""}`}
+                    onMouseEnter={() => setHoveredWord(index)}
+                    onMouseLeave={() => setHoveredWord(null)}
+                  >
+                    {word}
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="font-mono text-xs bg-foreground text-white px-2 py-1">
+                  <div className="flex items-center gap-1">
+                    <Lightbulb className="h-3 w-3" />
+                    <span>Number: {token}</span>
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          );
+        })}
+      </div>
+    );
+  };
   
   return (
     <div className="w-full max-w-3xl mx-auto px-4 py-6 sm:px-6">
@@ -275,8 +373,8 @@ const NumberTranslator: React.FC = () => {
                 <div className="text-sm font-medium text-muted-foreground mb-2">
                   Grouping: {variation.groupingDisplay}
                 </div>
-                <div className="text-lg font-medium">
-                  {variation.translation}
+                <div className="text-lg">
+                  {renderHighlightedTranslation(variation)}
                 </div>
               </div>
             ))}
