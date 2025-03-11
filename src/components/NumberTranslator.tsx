@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { languages, Language } from "../utils/numToCodes";
 import { useToast } from "@/hooks/use-toast";
@@ -106,16 +105,23 @@ const NumberTranslator: React.FC = () => {
     
     const groupings = generateVariableGroupings(digitsOnly);
     
-    const autoVariationsList = groupings.map((tokens) => {
+    const translationMap = new Map<string, { tokens: string[]; translation: string; groupingDisplay: string; isCustom: boolean }>();
+    
+    groupings.forEach((tokens) => {
       const translation = tokens.map(translateToken).join(" ");
       const groupingDisplay = tokens.join("-");
-      return { 
-        tokens, 
-        translation, 
-        groupingDisplay,
-        isCustom: false
-      };
+      
+      if (!translationMap.has(translation)) {
+        translationMap.set(translation, { 
+          tokens, 
+          translation, 
+          groupingDisplay,
+          isCustom: false
+        });
+      }
     });
+    
+    const autoVariationsList = Array.from(translationMap.values());
     
     autoVariationsList.sort((a, b) => {
       const aUnknown = (a.translation.match(/\?\?\?/g) || []).length;
