@@ -1,3 +1,4 @@
+
 // Russian number to word mapping (original)
 export const ruNumToWord = {
   "0": "номерок",
@@ -105,6 +106,7 @@ export const ruNumToWord = {
 
 // English number to word mapping
 export const enNumToWord = {
+  "0": "sauce",
   "00": "sauce",
   "01": "seed",
   "02": "sun",
@@ -209,6 +211,7 @@ export const enNumToWord = {
 
 // German number to word mapping (fixed encoding)
 export const deNumToWord = {
+  "0": "Soße",
   "00": "Soße",
   "01": "Seide",
   "02": "Sahne",

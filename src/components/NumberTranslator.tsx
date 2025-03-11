@@ -14,12 +14,15 @@ const NumberTranslator: React.FC = () => {
   const { toast } = useToast();
 
   const translateToken = (token: string): string => {
+    // Single digit translation (new handling)
+    if (token.length === 1) {
+      return selectedLanguage.dictionary[token] || 
+             selectedLanguage.dictionary[token.padStart(2, "0")] || 
+             `???(${token})`;
+    }
     // 2-digit translation
-    if (token.length === 2) {
+    else if (token.length === 2) {
       return selectedLanguage.dictionary[token] || `???(${token})`;
-    } else if (token.length === 1) {
-      const paddedToken = token.padStart(2, "0");
-      return selectedLanguage.dictionary[paddedToken] || `???(${token})`;
     } else {
       // Handle longer tokens by splitting them
       if (token.length % 2 !== 0) {
