@@ -1,12 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import { languages, Language } from "../utils/numToCodes";
 import { useToast } from "@/hooks/use-toast";
-import { Globe, Lightbulb } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Globe } from "lucide-react";
 
 const NumberTranslator: React.FC = () => {
   const [inputText, setInputText] = useState<string>("");
-  const [variations, setVariations] = useState<{ tokens: string[]; translation: string; groupingDisplay: string; isCustom?: boolean }[]>([]);
+  const [variations, setVariations] = useState<{ tokens: string[]; translation: string; groupingDisplay: string; isCustom?: boolean; isDefault?: boolean }[]>([]);
   const [displayCount, setDisplayCount] = useState<number>(3);
   const [isTranslating, setIsTranslating] = useState<boolean>(false);
   const [selectedLanguage, setSelectedLanguage] = useState<Language>(languages[0]);
@@ -102,6 +101,28 @@ const NumberTranslator: React.FC = () => {
     return result;
   };
 
+  const createDefaultGrouping = (digits: string): string[] => {
+    const tokens: string[] = [];
+    
+    if (digits.length % 2 !== 0) {
+      tokens.push(digits[0]);
+      
+      for (let i = 1; i < digits.length; i += 2) {
+        if (i + 1 < digits.length) {
+          tokens.push(digits.substring(i, i + 2));
+        } else {
+          tokens.push(digits[i]);
+        }
+      }
+    } else {
+      for (let i = 0; i < digits.length; i += 2) {
+        tokens.push(digits.substring(i, i + 2));
+      }
+    }
+    
+    return tokens;
+  };
+
   const generateVariableGroupings = (digits: string): string[][] => {
     let results: string[][] = [];
     
@@ -181,15 +202,29 @@ const NumberTranslator: React.FC = () => {
           isCustom: true
         });
       }
+    } else {
+      const defaultTokens = createDefaultGrouping(digitsOnly);
+      const defaultTranslation = defaultTokens.map(translateToken).join(" ");
+      const defaultGroupingDisplay = defaultTokens.join("-");
+      
+      variationsList.push({
+        tokens: defaultTokens,
+        translation: defaultTranslation,
+        groupingDisplay: defaultGroupingDisplay,
+        isDefault: true
+      });
     }
     
     const groupings = generateVariableGroupings(digitsOnly);
     
-    const translationMap = new Map<string, { tokens: string[]; translation: string; groupingDisplay: string; isCustom: boolean }>();
+    const translationMap = new Map<string, { tokens: string[]; translation: string; groupingDisplay: string; isCustom?: boolean; isDefault?: boolean }>();
     
     groupings.forEach((tokens) => {
       const translation = tokens.map(translateToken).join(" ");
       const groupingDisplay = tokens.join("-");
+      
+      const existing = variationsList.find(v => v.translation === translation);
+      if (existing) return;
       
       if (!translationMap.has(translation)) {
         translationMap.set(translation, { 
@@ -204,15 +239,15 @@ const NumberTranslator: React.FC = () => {
     const autoVariationsList = Array.from(translationMap.values());
     
     autoVariationsList.sort((a, b) => {
-      const aUnknown = (a.translation.match(/\?\?\?/g) || []).length;
-      const bUnknown = (b.translation.match(/\?\?\?/g) || []).length;
-      
-      if (aUnknown !== bUnknown) return aUnknown - bUnknown;
-      
       const aWordCount = a.translation.split(" ").length;
       const bWordCount = b.translation.split(" ").length;
       
       if (aWordCount !== bWordCount) return aWordCount - bWordCount;
+      
+      const aUnknown = (a.translation.match(/\?\?\?/g) || []).length;
+      const bUnknown = (b.translation.match(/\?\?\?/g) || []).length;
+      
+      if (aUnknown !== bUnknown) return aUnknown - bUnknown;
       
       return a.translation.length - b.translation.length;
     });
@@ -242,12 +277,20 @@ const NumberTranslator: React.FC = () => {
         setDisplayCount(Math.min(10, newVariations.length));
         
         const customGroupingExists = newVariations.some(v => v.isCustom === true);
+        const defaultGroupingExists = newVariations.some(v => v.isDefault === true);
+        
+        let toastMessage = "";
+        if (customGroupingExists) {
+          toastMessage = `Using your custom separators for the first translation. Found ${newVariations.length - 1} additional variations.`;
+        } else if (defaultGroupingExists) {
+          toastMessage = `Showing standard 2-digit grouping first. Found ${newVariations.length - 1} additional variations.`;
+        } else {
+          toastMessage = `Found ${newVariations.length} possible variations`;
+        }
         
         toast({
           title: "Translation complete",
-          description: customGroupingExists 
-            ? `Using your custom separators for the first translation. Found ${newVariations.length - 1} additional variations.`
-            : `Found ${newVariations.length} possible variations`,
+          description: toastMessage,
         });
       } else {
         toast({
@@ -377,7 +420,7 @@ const NumberTranslator: React.FC = () => {
             {variations.slice(0, displayCount).map((variation, index) => (
               <div 
                 key={index} 
-                className={`p-5 rounded-xl ${variation.isCustom 
+                className={`p-5 rounded-xl ${variation.isCustom || variation.isDefault
                   ? 'bg-accent/10 border-2 border-accent animate-pulse-once' 
                   : 'bg-secondary border border-border'} animate-fade-in transition-all-custom hover:shadow-md relative group`}
                 style={{ animationDelay: `${index * 100}ms` }}
@@ -387,6 +430,11 @@ const NumberTranslator: React.FC = () => {
                 {variation.isCustom && (
                   <div className="text-xs font-medium text-accent mb-1">
                     Using your custom separators
+                  </div>
+                )}
+                {variation.isDefault && (
+                  <div className="text-xs font-medium text-accent mb-1">
+                    Standard 2-digit grouping
                   </div>
                 )}
                 <div className="text-sm font-medium text-muted-foreground mb-2">
