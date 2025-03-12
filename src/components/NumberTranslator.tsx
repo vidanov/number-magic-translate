@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { languages, Language } from "../utils/numToCodes";
 import { useToast } from "@/hooks/use-toast";
-import { Globe, Lightbulb, ChevronRight } from "lucide-react";
+import { Globe, Lightbulb } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const NumberTranslator: React.FC = () => {
@@ -11,7 +11,6 @@ const NumberTranslator: React.FC = () => {
   const [isTranslating, setIsTranslating] = useState<boolean>(false);
   const [selectedLanguage, setSelectedLanguage] = useState<Language>(languages[0]);
   const [hoveredTranslationIndex, setHoveredTranslationIndex] = useState<number | null>(null);
-  const [hoveredWordIndex, setHoveredWordIndex] = useState<number | null>(null);
   const variationsRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -214,96 +213,28 @@ const NumberTranslator: React.FC = () => {
     setVariations([]);
   };
 
-  const renderNumberWordMapping = (variation: { tokens: string[]; translation: string }) => {
+  const renderNumberWordTable = (variation: { tokens: string[]; translation: string }) => {
     return (
-      <div className="absolute left-full ml-2 top-0 w-56 bg-white/95 backdrop-blur border border-accent/30 rounded-xl p-3 shadow-lg z-50 overflow-auto max-h-[200px]">
-        <h4 className="text-sm font-semibold mb-2 text-accent">Number-to-Word Mapping</h4>
-        <div className="space-y-1">
-          {variation.tokens.map((token, idx) => {
-            const word = translateToken(token);
-            return (
-              <div key={idx} className="flex items-center text-sm">
-                <span className="bg-accent/10 text-accent font-mono px-2 py-0.5 rounded mr-2 w-10 text-center">{token}</span>
-                <ChevronRight className="h-3 w-3 text-muted-foreground mr-1" />
-                <span className="font-medium">{word}</span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    );
-  };
-
-  const renderHighlightedTranslation = (variation: { tokens: string[]; translation: string }, variationIndex: number) => {
-    const words = variation.translation.split(" ");
-    
-    const wordToTokenMap = new Map<number, string>();
-    
-    let wordIndex = 0;
-    variation.tokens.forEach(token => {
-      const translatedToken = translateToken(token);
-      const wordCount = translatedToken.split(" ").length;
-      
-      for (let i = 0; i < wordCount; i++) {
-        wordToTokenMap.set(wordIndex + i, token);
-      }
-      
-      wordIndex += wordCount;
-    });
-    
-    const tokenColors = new Map<string, string>();
-    const colorPalette = [
-      "bg-red-100 hover:bg-red-200",
-      "bg-blue-100 hover:bg-blue-200",
-      "bg-green-100 hover:bg-green-200",
-      "bg-yellow-100 hover:bg-yellow-200",
-      "bg-purple-100 hover:bg-purple-200",
-      "bg-pink-100 hover:bg-pink-200",
-      "bg-indigo-100 hover:bg-indigo-200",
-      "bg-orange-100 hover:bg-orange-200",
-      "bg-teal-100 hover:bg-teal-200",
-      "bg-cyan-100 hover:bg-cyan-200",
-    ];
-    
-    variation.tokens.forEach((token, index) => {
-      tokenColors.set(token, colorPalette[index % colorPalette.length]);
-    });
-    
-    return (
-      <div className="flex flex-wrap gap-1">
-        {words.map((word, index) => {
-          const token = wordToTokenMap.get(index);
-          const color = token ? tokenColors.get(token) : "";
-          const isCurrentVariationHovered = hoveredTranslationIndex === variationIndex;
-          const isWordHighlighted = isCurrentVariationHovered && hoveredWordIndex === index;
-          
-          return (
-            <TooltipProvider key={index} delayDuration={100}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <span 
-                    className={`px-1 py-0.5 rounded transition-colors cursor-pointer font-medium ${color || "bg-gray-100 hover:bg-gray-200"} ${isWordHighlighted ? "ring-2 ring-accent" : ""}`}
-                    onMouseEnter={() => {
-                      setHoveredTranslationIndex(variationIndex);
-                      setHoveredWordIndex(index);
-                    }}
-                    onMouseLeave={() => {
-                      setHoveredWordIndex(null);
-                    }}
-                  >
-                    {word}
-                  </span>
-                </TooltipTrigger>
-                <TooltipContent side="top" className="font-mono text-xs bg-foreground text-white px-2 py-1">
-                  <div className="flex items-center gap-1">
-                    <Lightbulb className="h-3 w-3" />
-                    <span>Number: {token}</span>
-                  </div>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          );
-        })}
+      <div className="w-full bg-white/95 backdrop-blur rounded-xl p-3 shadow-lg overflow-hidden">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-accent/20">
+              <th className="px-2 py-1 text-left font-medium text-accent">Number</th>
+              <th className="px-2 py-1 text-left font-medium text-accent">Word</th>
+            </tr>
+          </thead>
+          <tbody>
+            {variation.tokens.map((token, idx) => {
+              const word = translateToken(token);
+              return (
+                <tr key={idx} className="border-b border-gray-100 last:border-0">
+                  <td className="px-2 py-1.5 font-mono text-accent/90">{token}</td>
+                  <td className="px-2 py-1.5 font-medium">{word}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
     );
   };
@@ -388,12 +319,13 @@ const NumberTranslator: React.FC = () => {
                 <div className="text-sm font-medium text-muted-foreground mb-2">
                   Grouping: {variation.groupingDisplay}
                 </div>
-                <div className="text-lg">
-                  {renderHighlightedTranslation(variation, index)}
-                </div>
                 
-                {hoveredTranslationIndex === index && (
-                  renderNumberWordMapping(variation)
+                {hoveredTranslationIndex === index ? (
+                  renderNumberWordTable(variation)
+                ) : (
+                  <div className="text-lg">
+                    {variation.translation}
+                  </div>
                 )}
               </div>
             ))}
