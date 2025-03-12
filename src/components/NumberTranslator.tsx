@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { languages, Language } from "../utils/numToCodes";
 import { useToast } from "@/hooks/use-toast";
@@ -15,8 +14,11 @@ const NumberTranslator: React.FC = () => {
   const variationsRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
-  // This function translates a token to its word representation
   const translateToken = (token: string): string => {
+    if (selectedLanguage.dictionary[token]) {
+      return selectedLanguage.dictionary[token];
+    }
+    
     if (token.length === 1) {
       return selectedLanguage.dictionary[token] || 
              selectedLanguage.dictionary[token.padStart(2, "0")] || 
@@ -40,58 +42,62 @@ const NumberTranslator: React.FC = () => {
     }
   };
 
-  // Expanded version of translateToken that breaks down longer tokens for the hover view
   const expandAndTranslateToken = (token: string): { digit: string; word: string }[] => {
     const result: { digit: string; word: string }[] = [];
     
-    if (token.length <= 2) {
+    if (token.length <= 2 && selectedLanguage.dictionary[token]) {
       result.push({
         digit: token,
-        word: selectedLanguage.dictionary[token] || `???(${token})`
+        word: selectedLanguage.dictionary[token]
       });
       return result;
     }
     
-    // Break down longer tokens into individual digits or digit pairs
-    if (token.length % 2 !== 0) {
-      // If odd length, handle first digit separately
-      const firstDigit = token.slice(0, 1);
-      result.push({
-        digit: firstDigit,
-        word: selectedLanguage.dictionary[firstDigit] || 
-              selectedLanguage.dictionary[firstDigit.padStart(2, "0")] || 
-              `???(${firstDigit})`
-      });
-      
-      // Handle the rest as pairs
-      for (let i = 1; i < token.length; i += 2) {
-        if (i + 1 < token.length) {
+    if (token.length > 2) {
+      if (token.length % 2 !== 0) {
+        const firstDigit = token.slice(0, 1);
+        result.push({
+          digit: firstDigit,
+          word: selectedLanguage.dictionary[firstDigit] || 
+                selectedLanguage.dictionary[firstDigit.padStart(2, "0")] || 
+                `???(${firstDigit})`
+        });
+        
+        for (let i = 1; i < token.length; i += 2) {
+          if (i + 1 < token.length) {
+            const pair = token.slice(i, i + 2);
+            result.push({
+              digit: pair,
+              word: selectedLanguage.dictionary[pair] || `???(${pair})`
+            });
+          } else {
+            const lastDigit = token.slice(i, i + 1);
+            result.push({
+              digit: lastDigit,
+              word: selectedLanguage.dictionary[lastDigit] || 
+                    selectedLanguage.dictionary[lastDigit.padStart(2, "0")] || 
+                    `???(${lastDigit})`
+            });
+          }
+        }
+      } else {
+        for (let i = 0; i < token.length; i += 2) {
           const pair = token.slice(i, i + 2);
           result.push({
             digit: pair,
             word: selectedLanguage.dictionary[pair] || `???(${pair})`
           });
-        } else {
-          // Handle last digit if there's an odd number remaining
-          const lastDigit = token.slice(i, i + 1);
-          result.push({
-            digit: lastDigit,
-            word: selectedLanguage.dictionary[lastDigit] || 
-                  selectedLanguage.dictionary[lastDigit.padStart(2, "0")] || 
-                  `???(${lastDigit})`
-          });
         }
       }
-    } else {
-      // Even length, process as pairs
-      for (let i = 0; i < token.length; i += 2) {
-        const pair = token.slice(i, i + 2);
-        result.push({
-          digit: pair,
-          word: selectedLanguage.dictionary[pair] || `???(${pair})`
-        });
-      }
+      return result;
     }
+    
+    result.push({
+      digit: token,
+      word: selectedLanguage.dictionary[token] || 
+            (token.length === 1 ? selectedLanguage.dictionary[token.padStart(2, "0")] : null) || 
+            `???(${token})`
+    });
     
     return result;
   };
@@ -197,21 +203,17 @@ const NumberTranslator: React.FC = () => {
     
     const autoVariationsList = Array.from(translationMap.values());
     
-    // First sort by unknown words (fewer is better)
-    // Then sort by word count (fewer is better)
     autoVariationsList.sort((a, b) => {
       const aUnknown = (a.translation.match(/\?\?\?/g) || []).length;
       const bUnknown = (b.translation.match(/\?\?\?/g) || []).length;
       
       if (aUnknown !== bUnknown) return aUnknown - bUnknown;
       
-      // Count the number of words in each translation (by counting spaces + 1)
       const aWordCount = a.translation.split(" ").length;
       const bWordCount = b.translation.split(" ").length;
       
       if (aWordCount !== bWordCount) return aWordCount - bWordCount;
       
-      // If word counts are the same, prefer shorter total length
       return a.translation.length - b.translation.length;
     });
     
@@ -281,7 +283,6 @@ const NumberTranslator: React.FC = () => {
   };
 
   const renderNumberWordTable = (variation: { tokens: string[]; translation: string }) => {
-    // Create a flat list of all digit-word pairs by expanding each token
     const allPairs: { digit: string; word: string }[] = [];
     
     variation.tokens.forEach(token => {
