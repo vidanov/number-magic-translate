@@ -1,26 +1,17 @@
 
-// Russian number to word mapping (updated with single digits)
+// Russian number to word mapping
 export const ruNumToWord = {
   "0": "номерок",
   "00": "бочки",
   "1": "еЖ",
-  "01": "еЖ",
   "2": "яД",
-  "02": "яД",
   "3": "уХо",
-  "03": "уХо",
   "4": "Чай",
-  "04": "Чай",
   "5": "оБои",
-  "05": "оБои",
   "6": "юЛа",
-  "06": "юЛа",
   "7": "оСа",
-  "07": "оСа",
   "8": "иВа",
-  "08": "иВа",
   "9": "яйЦо",
-  "09": "яйЦо",
   "10": "оГоНь",
   "11": "ГаГарин",
   "12": "ГиТара",
@@ -113,28 +104,18 @@ export const ruNumToWord = {
   "99": "РаЦия"
 };
 
-// English number to word mapping (updated with single digits)
+// English number to word mapping
 export const enNumToWord = {
   "0": "sauce",
-  "00": "Zeus",
   "1": "seed",
-  "01": "seed",
   "2": "sun",
-  "02": "sun",
   "3": "sumo",
-  "03": "sumo",
   "4": "sierra",
-  "04": "sierra",
   "5": "soil",
-  "05": "soil",
   "6": "sewage",
-  "06": "sewage",
   "7": "sky",
-  "07": "sky",
   "8": "sofa",
-  "08": "sofa",
   "9": "soap",
-  "09": "soap",
   "10": "toes",
   "11": "tat",
   "12": "tin",
@@ -227,28 +208,18 @@ export const enNumToWord = {
   "99": "pipe"
 };
 
-// German number to word mapping (updated with single digits)
+// German number to word mapping
 export const deNumToWord = {
   "0": "Soße",
-  "00": "Zeus",
   "1": "Seide",
-  "01": "Seide",
   "2": "Sahne",
-  "02": "Sahne",
   "3": "Sumo",
-  "03": "Sumo",
   "4": "Säure",
-  "04": "Säure",
   "5": "Säule",
-  "05": "Säule",
   "6": "Sushi",
-  "06": "Sushi",
   "7": "Socke",
-  "07": "Socke",
   "8": "Seife",
-  "08": "Seife",
   "9": "Suppe",
-  "09": "Suppe",
   "10": "Tasse",
   "11": "Tod",
   "12": "Tanne",
