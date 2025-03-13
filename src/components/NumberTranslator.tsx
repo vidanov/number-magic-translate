@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { languages, Language } from "../utils/numToCodes";
 import { useToast } from "@/hooks/use-toast";
@@ -14,25 +15,26 @@ const NumberTranslator: React.FC = () => {
   const { toast } = useToast();
 
   const translateToken = (token: string): string => {
-    if (selectedLanguage.dictionary[token]) {
-      return selectedLanguage.dictionary[token];
+    // Remove leading zeros for better translation
+    const normalizedToken = token.replace(/^0+/, "") || "0";
+    
+    if (selectedLanguage.dictionary[normalizedToken]) {
+      return selectedLanguage.dictionary[normalizedToken];
     }
     
-    if (token.length === 1) {
-      return selectedLanguage.dictionary[token] || 
-             selectedLanguage.dictionary[token.padStart(2, "0")] || 
-             `???(${token})`;
+    if (normalizedToken.length === 1) {
+      return selectedLanguage.dictionary[normalizedToken] || `???(${token})`;
     }
-    else if (token.length === 2) {
-      return selectedLanguage.dictionary[token] || `???(${token})`;
+    else if (normalizedToken.length === 2) {
+      return selectedLanguage.dictionary[normalizedToken] || `???(${token})`;
     } else {
-      if (token.length % 2 !== 0) {
-        const firstDigit = token.slice(0, 1);
-        const rest = token.slice(1);
+      if (normalizedToken.length % 2 !== 0) {
+        const firstDigit = normalizedToken.slice(0, 1);
+        const rest = normalizedToken.slice(1);
         return translateToken(firstDigit) + " " + translateToken(rest);
       } else {
-        const first = token.slice(0, 2);
-        const rest = token.slice(2);
+        const first = normalizedToken.slice(0, 2);
+        const rest = normalizedToken.slice(2);
         if (rest.length === 0) {
           return translateToken(first);
         }
@@ -44,44 +46,43 @@ const NumberTranslator: React.FC = () => {
   const expandAndTranslateToken = (token: string): { digit: string; word: string }[] => {
     const result: { digit: string; word: string }[] = [];
     
-    if (token.length <= 2 && selectedLanguage.dictionary[token]) {
+    // Remove leading zeros unless it's just "0"
+    const normalizedToken = token.replace(/^0+/, "") || "0";
+    
+    if (normalizedToken.length <= 2 && selectedLanguage.dictionary[normalizedToken]) {
       result.push({
-        digit: token,
-        word: selectedLanguage.dictionary[token]
+        digit: token, // Keep original for display
+        word: selectedLanguage.dictionary[normalizedToken]
       });
       return result;
     }
     
-    if (token.length > 2) {
-      if (token.length % 2 !== 0) {
-        const firstDigit = token.slice(0, 1);
+    if (normalizedToken.length > 2) {
+      if (normalizedToken.length % 2 !== 0) {
+        const firstDigit = normalizedToken.slice(0, 1);
         result.push({
-          digit: firstDigit,
-          word: selectedLanguage.dictionary[firstDigit] || 
-                selectedLanguage.dictionary[firstDigit.padStart(2, "0")] || 
-                `???(${firstDigit})`
+          digit: token.startsWith("0") ? token.slice(0, token.length - normalizedToken.length + 1) : firstDigit,
+          word: selectedLanguage.dictionary[firstDigit] || `???(${firstDigit})`
         });
         
-        for (let i = 1; i < token.length; i += 2) {
-          if (i + 1 < token.length) {
-            const pair = token.slice(i, i + 2);
+        for (let i = 1; i < normalizedToken.length; i += 2) {
+          if (i + 1 < normalizedToken.length) {
+            const pair = normalizedToken.slice(i, i + 2);
             result.push({
               digit: pair,
               word: selectedLanguage.dictionary[pair] || `???(${pair})`
             });
           } else {
-            const lastDigit = token.slice(i, i + 1);
+            const lastDigit = normalizedToken.slice(i, i + 1);
             result.push({
               digit: lastDigit,
-              word: selectedLanguage.dictionary[lastDigit] || 
-                    selectedLanguage.dictionary[lastDigit.padStart(2, "0")] || 
-                    `???(${lastDigit})`
+              word: selectedLanguage.dictionary[lastDigit] || `???(${lastDigit})`
             });
           }
         }
       } else {
-        for (let i = 0; i < token.length; i += 2) {
-          const pair = token.slice(i, i + 2);
+        for (let i = 0; i < normalizedToken.length; i += 2) {
+          const pair = normalizedToken.slice(i, i + 2);
           result.push({
             digit: pair,
             word: selectedLanguage.dictionary[pair] || `???(${pair})`
@@ -91,32 +92,67 @@ const NumberTranslator: React.FC = () => {
       return result;
     }
     
+    // If we have a token like "01", split it into "0" and "1" if needed
+    if (token.length === 2 && !selectedLanguage.dictionary[normalizedToken]) {
+      const first = token[0];
+      const second = token[1];
+      
+      // Only break it into single digits if we can translate at least one of them
+      if (selectedLanguage.dictionary[first] || selectedLanguage.dictionary[second]) {
+        if (selectedLanguage.dictionary[first]) {
+          result.push({
+            digit: first,
+            word: selectedLanguage.dictionary[first]
+          });
+        } else {
+          result.push({
+            digit: first,
+            word: `???(${first})`
+          });
+        }
+        
+        if (selectedLanguage.dictionary[second]) {
+          result.push({
+            digit: second,
+            word: selectedLanguage.dictionary[second]
+          });
+        } else {
+          result.push({
+            digit: second,
+            word: `???(${second})`
+          });
+        }
+        return result;
+      }
+    }
+    
     result.push({
       digit: token,
-      word: selectedLanguage.dictionary[token] || 
-            (token.length === 1 ? selectedLanguage.dictionary[token.padStart(2, "0")] : null) || 
-            `???(${token})`
+      word: selectedLanguage.dictionary[normalizedToken] || `???(${token})`
     });
     
     return result;
   };
 
   const createDefaultGrouping = (digits: string): string[] => {
+    // Remove leading zeros from the input
+    const normalizedDigits = digits.replace(/^0+/, "");
+    
     const tokens: string[] = [];
     
-    if (digits.length % 2 !== 0) {
-      tokens.push(digits[0]);
+    if (normalizedDigits.length % 2 !== 0) {
+      tokens.push(normalizedDigits[0]);
       
-      for (let i = 1; i < digits.length; i += 2) {
-        if (i + 1 < digits.length) {
-          tokens.push(digits.substring(i, i + 2));
+      for (let i = 1; i < normalizedDigits.length; i += 2) {
+        if (i + 1 < normalizedDigits.length) {
+          tokens.push(normalizedDigits.substring(i, i + 2));
         } else {
-          tokens.push(digits[i]);
+          tokens.push(normalizedDigits[i]);
         }
       }
     } else {
-      for (let i = 0; i < digits.length; i += 2) {
-        tokens.push(digits.substring(i, i + 2));
+      for (let i = 0; i < normalizedDigits.length; i += 2) {
+        tokens.push(normalizedDigits.substring(i, i + 2));
       }
     }
     
@@ -124,6 +160,9 @@ const NumberTranslator: React.FC = () => {
   };
 
   const generateVariableGroupings = (digits: string): string[][] => {
+    // Remove leading zeros
+    const normalizedDigits = digits.replace(/^0+/, "") || "0";
+    
     let results: string[][] = [];
     
     const isDuplicateTranslation = (newGrouping: string[]): boolean => {
@@ -135,26 +174,23 @@ const NumberTranslator: React.FC = () => {
     };
     
     const generateCombinations = (index: number, currentGrouping: string[] = []) => {
-      if (index === digits.length) {
+      if (index === normalizedDigits.length) {
         if (!isDuplicateTranslation(currentGrouping)) {
           results.push([...currentGrouping]);
         }
         return;
       }
       
-      currentGrouping.push(digits[index]);
+      // Try using the single digit
+      currentGrouping.push(normalizedDigits[index]);
       generateCombinations(index + 1, currentGrouping);
       currentGrouping.pop();
       
-      if (index + 1 < digits.length) {
-        const twoDigits = digits.slice(index, index + 2);
+      if (index + 1 < normalizedDigits.length) {
+        const twoDigits = normalizedDigits.slice(index, index + 2);
         
-        if (twoDigits === "00" && index + 2 <= digits.length) {
-          currentGrouping.push(twoDigits);
-          generateCombinations(index + 2, currentGrouping);
-          currentGrouping.pop();
-        } 
-        else {
+        if (selectedLanguage.dictionary[twoDigits]) {
+          // Only use two-digit grouping if it has a known translation
           currentGrouping.push(twoDigits);
           generateCombinations(index + 2, currentGrouping);
           currentGrouping.pop();
@@ -189,6 +225,9 @@ const NumberTranslator: React.FC = () => {
       });
       return [];
     }
+    
+    // Remove leading zeros for better translation
+    const normalizedDigits = digitsOnly.replace(/^0+/, "") || "0";
     
     if (hasSeparators) {
       const customTokens = extractCustomTokens(raw);
@@ -238,6 +277,7 @@ const NumberTranslator: React.FC = () => {
     
     const autoVariationsList = Array.from(translationMap.values());
     
+    // Sort by word count first (fewer words first), then by unknown count and length
     autoVariationsList.sort((a, b) => {
       const aWordCount = a.translation.split(" ").length;
       const bWordCount = b.translation.split(" ").length;
