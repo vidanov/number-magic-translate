@@ -5,11 +5,13 @@ import Navigation from "../components/Navigation";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-secondary/50 flex flex-col">
+    // Use white background for the whole page now, consistent with nav change
+    <div className="min-h-screen bg-white flex flex-col">
       <Navigation />
-      <div className="flex-grow flex flex-col items-center justify-center py-10">
+      {/* Use a max-width container, add standard padding */}
+      <main className="flex-grow max-w-7xl w-full mx-auto px-4 py-8 md:py-12">
         <NumberTranslator />
-      </div>
+      </main>
     </div>
   );
 };
