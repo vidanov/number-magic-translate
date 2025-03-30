@@ -58,14 +58,25 @@ yarn dev
 ## Language Support
 
 Currently supported languages:
-- English (default)
-- German
+- English (default) 
+- German 
 - Russian
+- Italian - not sure if all words are correct and good to use
+- French - not sure if all words are correct and good to use
+- Spanish - not sure if all words are correct and good to use
 
 We welcome contributions to add support for more languages! To add a new language, you would need to:
 1. Create a new number-to-word mapping dictionary
 2. Add translations for the UI elements
 3. Update the language selector
+
+##  🛠️ Made with Vibe
+This project was crafted in Vibe Coding Mode – fueled by curiosity, good coffee, and the right tools:
+
+💖 Lovable – for the playful and productive energy
+🧠 Cursor – our intelligent pair programmer
+🤖 ChatGPT – ideas, structure, and late-night code whispers
+Code with joy. Build with flow. 🚀
 
 ## Contributing
 
