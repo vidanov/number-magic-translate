@@ -1,7 +1,7 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { HelpCircle, Github } from "lucide-react";
-import { useTranslation } from 'react-i18next'; // Import useTranslation
+import { useTranslation } from 'react-i18next';
 
 // Define available languages
 const availableLanguages = [
@@ -15,22 +15,32 @@ const availableLanguages = [
 
 const Navigation: React.FC = () => {
   const location = useLocation();
-  const { t, i18n } = useTranslation(); // Get t function and i18n instance
+  const navigate = useNavigate();
+  const { t } = useTranslation();
 
   // Function to change language
   const handleLangChange = (langCode: string) => {
-    i18n.changeLanguage(langCode); // Use i18n to change language
+    // Get the current path without the language prefix
+    const currentPath = location.pathname.replace(/^\/[a-z]{2}/, '');
+    // If the path is empty or just '/', use '/'
+    const newPath = currentPath === '' ? '/' : currentPath;
+    
+    // Navigate to the new path with the selected language
+    navigate(`/${langCode}${newPath}`, { replace: true });
   };
 
-  // Get the base language code (e.g., 'en' from 'en-US')
-  const currentLangCode = i18n.language.split('-')[0];
+  // Get the current language from the URL, ensuring it's a valid language code
+  const currentLangCode = availableLanguages.find(lang => 
+    location.pathname.startsWith(`/${lang.code}/`) || 
+    location.pathname === `/${lang.code}`
+  )?.code || 'en';
 
   return (
     // Use white background, increased padding, keep bottom border
     <nav className="w-full bg-white py-4 mb-6 border-b border-border">
       <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
         <Link
-          to="/"
+          to={`/${currentLangCode}`}
           // Keep title styling, ensure it stands out
           className="text-xl font-semibold text-foreground hover:text-primary transition-colors"
         >
@@ -48,10 +58,9 @@ const Navigation: React.FC = () => {
                 className={`p-1 rounded transition-all duration-200 ${
                   currentLangCode === lang.code
                     ? "ring-2 ring-primary ring-offset-1 scale-110" // Highlight selected
-                    : "opacity-70 hover:opacity-100 hover:scale-105" // Dim unselected, slight grow on hover
+                    : "hover:bg-gray-100" // Dim unselected, slight grow on hover
                 }`}
-                aria-label={`Select language: ${lang.name}`} // Use full name for accessibility
-                title={lang.name} // Add tooltip with language name
+                aria-label={`Switch to ${lang.name}`} // Use full name for accessibility
               >
                 <span className="text-xl">{lang.flag}</span>
               </button>
@@ -63,23 +72,18 @@ const Navigation: React.FC = () => {
             href="https://github.com/vidanov/number-magic-translate"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center space-x-1 px-3 py-1 rounded-md transition-colors text-foreground hover:text-primary"
+            className="text-muted-foreground hover:text-primary transition-colors"
             aria-label="GitHub Repository"
           >
-            <Github size={18} />
-            <span className="sr-only">GitHub</span>
+            <Github className="w-5 h-5" />
           </a>
 
           {/* Help Link */}
           <Link
-            to="/help"
-            // Simplified link styling
-            className={`flex items-center space-x-1 px-3 py-1 rounded-md transition-colors text-foreground hover:text-primary ${
-              location.pathname === "/help" ? "text-primary font-medium" : "" // Subtle active state
-            }`}
+            to={`/${currentLangCode}/help`}
+            className="text-muted-foreground hover:text-primary transition-colors"
           >
-            <HelpCircle size={18} />
-            <span>{t('navHelp')}</span> {/* Translate Help text */}
+            <HelpCircle className="w-5 h-5" />
           </Link>
         </div>
       </div>

@@ -1,6 +1,5 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
 
 const resources = {
   en: {
@@ -548,24 +547,19 @@ const resources = {
 };
 
 i18n
-  .use(LanguageDetector) // Detect user language
-  .use(initReactI18next) // Pass i18n instance to react-i18next
+  .use(initReactI18next)
   .init({
     resources,
-    fallbackLng: 'en', // Use English if detected language is not available
-    debug: import.meta.env.DEV, // Enable debug output in development
+    fallbackLng: 'en',
+    supportedLngs: ['en', 'de', 'es', 'fr', 'it', 'ru'],
     interpolation: {
-      escapeValue: false, // React already safes from xss
+      escapeValue: false
     },
     detection: {
-      // Order and from where user language should be detected
-      order: ['localStorage', 'navigator', 'htmlTag', 'path', 'subdomain'],
-      // Keys or params to lookup language from
-      lookupLocalStorage: 'i18nextLng', // Key to store language in localStorage
-      // Cache user language on
-      caches: ['localStorage'],
-      // optional htmlTag with lang attribute, the default is:
-      htmlTag: document.documentElement
+      order: ['path'],
+      lookupFromPathIndex: 1,
+      caches: [],
+      checkWhitelist: true
     }
   });
 

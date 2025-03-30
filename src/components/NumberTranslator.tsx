@@ -5,11 +5,14 @@ import CopyButton from "./CopyButton";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useTranslation } from 'react-i18next'; // Import useTranslation
+import { useTranslation } from 'react-i18next';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const NumberTranslator: React.FC = () => {
-  const { t, i18n } = useTranslation(); // Get the t function and i18n instance
-  const [inputText, setInputText] = useState<string>("");
+  const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
+  const { number } = useParams();
+  const [inputText, setInputText] = useState<string>(number || "");
   const [variations, setVariations] = useState<{ tokens: string[]; translation: string; groupingDisplay: string; isCustom?: boolean; isDefault?: boolean }[]>([]);
   const [displayCount, setDisplayCount] = useState<number>(3);
   const [isTranslating, setIsTranslating] = useState<boolean>(false);
@@ -31,6 +34,22 @@ const NumberTranslator: React.FC = () => {
     // When UI language changes, clear previous translations
     setVariations([]);
   }, [i18n.language]);
+
+  // Handle URL parameter changes
+  useEffect(() => {
+    if (number) {
+      setInputText(number);
+      handleTranslate();
+    }
+  }, [number]);
+
+  // Update URL when translations are generated
+  useEffect(() => {
+    if (inputText && variations.length > 0) {
+      const currentLang = i18n.language.split('-')[0];
+      navigate(`/${currentLang}/translate/${encodeURIComponent(inputText)}`, { replace: true });
+    }
+  }, [inputText, variations, i18n.language, navigate]);
 
   // --- translateToken, expandAndTranslateToken, createDefaultGrouping, generateVariableGroupings, containsSeparators, extractCustomTokens remain the same ---
   // (Code for these functions omitted for brevity)
@@ -330,13 +349,15 @@ const NumberTranslator: React.FC = () => {
   const processInput = (raw: string) => {
     let variationsList = [];
 
-    const hasSeparators = containsSeparators(raw);
-    const digitsOnly = raw.replace(/\D+/g, "");
+    // Clean the input by removing all non-digit characters except separators
+    const cleanedInput = raw.replace(/[^\d\-\s.,;:|/\\]/g, "");
+    const hasSeparators = containsSeparators(cleanedInput);
+    const digitsOnly = cleanedInput.replace(/\D+/g, "");
 
     if (digitsOnly.length === 0) {
       toast({
-        title: t('toast.noDigits.title'), // Translate
-        description: t('toast.noDigits.description'), // Translate
+        title: t('toast.noDigits.title'),
+        description: t('toast.noDigits.description'),
         variant: "destructive",
       });
       return [];
@@ -346,7 +367,7 @@ const NumberTranslator: React.FC = () => {
     const normalizedDigits = digitsOnly.replace(/^0+/, "") || "0";
 
     if (hasSeparators) {
-      const customTokens = extractCustomTokens(raw);
+      const customTokens = extractCustomTokens(cleanedInput);
       if (customTokens.length > 0) {
         const translation = customTokens.map(translateToken).join(" ");
         const groupingDisplay = customTokens.join("-");
@@ -416,54 +437,49 @@ const NumberTranslator: React.FC = () => {
   const handleTranslate = () => {
     if (!inputText.trim()) {
       toast({
-        title: t('toast.emptyInput.title'), // Translate
-        description: t('toast.emptyInput.description'), // Translate
+        title: t('toast.emptyInput.title'),
+        description: t('toast.emptyInput.description'),
         variant: "destructive",
       });
       return;
     }
 
     setIsTranslating(true);
-
-    setTimeout(() => {
-      const newVariations = processInput(inputText);
-
-      if (newVariations.length > 0) {
-        setVariations(newVariations);
-        setDisplayCount(Math.min(10, newVariations.length));
-
-        const customGroupingExists = newVariations.some(v => v.isCustom === true);
-        const defaultGroupingExists = newVariations.some(v => v.isDefault === true);
-
-        let toastDescriptionKey = "";
-        const count = newVariations.length;
-        const additionalCount = count > 1 ? count - 1 : 0;
-
-        if (customGroupingExists) {
-          toastDescriptionKey = 'toast.translationComplete.customDesc';
-        } else if (defaultGroupingExists) {
-          toastDescriptionKey = 'toast.translationComplete.defaultDesc';
-        } else {
-          toastDescriptionKey = 'toast.translationComplete.variationsDesc';
-        }
-
+    try {
+      const processedInput = processInput(inputText);
+      if (!processedInput || processedInput.length === 0) {
         toast({
-          title: t('toast.translationComplete.title'), // Translate
-          description: t(toastDescriptionKey, { count: additionalCount }), // Translate with count
+          title: t('toast.noDigits.title'),
+          description: t('toast.noDigits.description'),
+          variant: "destructive",
         });
-      } else {
-        // Check if the no digits toast was already shown in processInput
-        if (inputText.replace(/\D+/g, "").length > 0) {
-            toast({
-                title: t('toast.noTranslations.title'), // Translate
-                description: t('toast.noTranslations.description'), // Translate
-                variant: "destructive",
-            });
-        }
+        return;
       }
 
+      setVariations(processedInput);
+      setDisplayCount(3);
+
+      // Show success toast
+      toast({
+        title: t('toast.translationComplete.title'),
+        description: t('toast.translationComplete.customDesc', { count: processedInput.length }),
+      });
+    } catch (error) {
+      console.error('Translation error:', error);
+      toast({
+        title: "Error",
+        description: "An error occurred while translating the number.",
+        variant: "destructive",
+      });
+    } finally {
       setIsTranslating(false);
-    }, 600);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputText(e.target.value);
+    // Clear variations when input changes
+    setVariations([]);
   };
 
   const handleShowMore = () => {
@@ -497,8 +513,8 @@ const NumberTranslator: React.FC = () => {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-accent/20">
-              <th className="px-2 py-1 text-left font-medium text-accent">{t('translator.table.headerNumber')}</th> {/* Translate */}
-              <th className="px-2 py-1 text-left font-medium text-accent">{t('translator.table.headerWord')}</th> {/* Translate */}
+              <th className="px-2 py-1 text-left font-medium text-accent">{t('translator.table.headerNumber')}</th>
+              <th className="px-2 py-1 text-left font-medium text-accent">{t('translator.table.headerWord')}</th>
             </tr>
           </thead>
           <tbody>
@@ -518,10 +534,10 @@ const NumberTranslator: React.FC = () => {
     <div className="w-full max-w-3xl mx-auto px-4 py-6 sm:px-6">
       <div className="glass rounded-2xl p-6 sm:p-8 mb-8 animate-fade-in">
         <h1 className="text-3xl sm:text-4xl font-bold text-gradient mb-4 text-center">
-          {t('translator.title')} {/* Translate */}
+          {t('translator.title')}
         </h1>
         <p className="text-md text-muted-foreground text-center mb-6">
-          {t('translator.description')} {/* Translate */}
+          {t('translator.description')}
         </p>
 
         <div className="space-y-6">
@@ -529,22 +545,20 @@ const NumberTranslator: React.FC = () => {
             <Input
               className="h-12 text-base"
               type="text"
-              placeholder={t('translator.inputPlaceholder')} // Translate
+              placeholder={t('translator.inputPlaceholder')}
               value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
+              onChange={handleInputChange}
               onKeyPress={handleKeyPress}
-              aria-label={t('translator.inputAriaLabel')} // Translate
+              aria-label={t('translator.inputAriaLabel')}
             />
           </div>
-
-          {/* Language selector removed - now using UI language */}
 
           <button
             className={`w-full h-14 rounded-xl bg-accent text-accent-foreground font-medium text-lg transition-all-custom hover:bg-accent/90 active:scale-[0.98] focus-ring ${isTranslating ? 'animate-pulse-subtle' : ''}`}
             onClick={handleTranslate}
             disabled={isTranslating}
           >
-            {isTranslating ? t('translator.buttonTranslating') : t('translator.buttonTranslate')} {/* Translate */}
+            {isTranslating ? t('translator.buttonTranslating') : t('translator.buttonTranslate')}
           </button>
         </div>
       </div>
@@ -555,7 +569,7 @@ const NumberTranslator: React.FC = () => {
           className="glass rounded-2xl p-6 sm:p-8 animate-slide-up"
         >
           <h2 className="text-xl font-semibold mb-6 text-gradient">
-            {t('translator.resultsTitle', { count: variations.length })} {/* Translate with count */}
+            {t('translator.resultsTitle', { count: variations.length })}
           </h2>
 
           <div className="space-y-4">
@@ -571,16 +585,16 @@ const NumberTranslator: React.FC = () => {
               >
                 {variation.isCustom && (
                   <div className="text-xs font-medium text-accent mb-1">
-                    {t('translator.customSeparatorLabel')} {/* Translate */}
+                    {t('translator.customSeparatorLabel')}
                   </div>
                 )}
                 {variation.isDefault && (
                   <div className="text-xs font-medium text-accent mb-1">
-                    {t('translator.defaultGroupingLabel')} {/* Translate */}
+                    {t('translator.defaultGroupingLabel')}
                   </div>
                 )}
                 <div className="text-sm font-medium text-muted-foreground mb-2">
-                  {t('translator.groupingLabel')}: {variation.groupingDisplay} {/* Translate */}
+                  {t('translator.groupingLabel')}: {variation.groupingDisplay}
                 </div>
 
                 <div className="flex items-center justify-between relative">
@@ -604,7 +618,7 @@ const NumberTranslator: React.FC = () => {
               className="mt-6 w-full py-3 rounded-xl border border-border bg-white text-foreground font-medium transition-all-custom hover:bg-secondary focus-ring"
               onClick={handleShowMore}
             >
-              {t('translator.showMoreButton')} {/* Translate */}
+              {t('translator.showMoreButton')}
             </button>
           )}
         </div>
