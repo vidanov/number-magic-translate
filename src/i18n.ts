@@ -10,6 +10,7 @@ const resources = {
       "navHelp": "Help",
       "copyButton": "Copy",
       "copiedTooltip": "Copied!",
+      "navFlashcards": "Flashcards",
 
       // Translator Page
       "translator": {
@@ -50,6 +51,10 @@ const resources = {
         "noTranslations": {
           "title": "No translations found",
           "description": "Try a different input or check the selected language system"
+        },
+        "copied": {
+          "title": "Copied!",
+          "description": "Text copied to clipboard"
         }
       },
 
@@ -87,6 +92,53 @@ const resources = {
         "footer": {
           "blogLink": "Visit Vidanov.com/blog"
         }
+      },
+
+      "flashcards": {
+        "title": "Flashcards",
+        "manageCards": "Manage Cards",
+        "studySession": "Study Session",
+        "noCards": "No Cards to Review",
+        "addMoreCards": "Add more cards from the translator to start studying",
+        "again": "Again",
+        "hard": "Hard",
+        "good": "Good",
+        "easy": "Easy",
+        "ratingSubmitted": "Rating Submitted",
+        "nextReviewMinutes": "Next review in {{minutes}} minutes",
+        "nextReview": "Next review in {{days}} days",
+        "cardDeleted": "Card Deleted",
+        "cardUpdated": "Card Updated",
+        "editCard": "Edit Card",
+        "enterMeaning": "Enter Meaning",
+        "saveChanges": "Save Changes",
+        "statistics": "Statistics",
+        "totalCards": "Total Cards",
+        "dueCards": "Due Now",
+        "masteredCards": "Mastered",
+        "learningCards": "Learning",
+        "masterProgress": "Mastery Progress",
+        "averageEase": "Average Ease",
+        "nextInMinutes": "Next: {{minutes}}m",
+        "interval": "Interval: {{value}}",
+        "ease": "Ease: {{value}}",
+        "learning": "Learning",
+        "days": "{{count}} days",
+        "howToAdd": "How to Add Flashcards",
+        "howToStep1": "Go to the translator page and enter a number you want to learn",
+        "howToStep2": "Click the save icon next to any translation you want to remember",
+        "howToStep3": "Add a meaningful description to help you remember the number-word connection",
+        "aboutSystem": "About the Learning System",
+        "aboutPoint1": "Cards use spaced repetition - you'll see difficult cards more often and easy cards less frequently",
+        "aboutPoint2": "New cards start with short intervals (minutes) and gradually increase to days as you learn them",
+        "aboutPoint3": "Rate your recall honestly to help the system adjust review timing for optimal learning",
+        "saveCardSuccess": "Card Saved!",
+        "cardAddedToStudy": "Card has been added to your study deck",
+        "lateReview": "Review was {{days}} days late. {{next}}",
+        "saveCardTitle": "Save Card",
+        "enterMeaningPrompt": "Enter meaning for this number",
+        "save": "Save",
+        "cancel": "Cancel"
       }
     }
   },
@@ -98,6 +150,7 @@ const resources = {
       "navHelp": "Hilfe",
       "copyButton": "Kopieren",
       "copiedTooltip": "Kopiert!",
+      "navFlashcards": "Karteikarten",
 
       // Translator Page
       "translator": {
@@ -138,6 +191,10 @@ const resources = {
         "noTranslations": {
           "title": "Keine Übersetzungen gefunden",
           "description": "Versuchen Sie eine andere Eingabe oder überprüfen Sie das ausgewählte Sprachsystem"
+        },
+        "copied": {
+          "title": "Kopiert!",
+          "description": "Text in die Zwischenablage kopiert"
         }
       },
 
@@ -160,7 +217,7 @@ const resources = {
           "item2": { "title": "Langfristige Speicherung", "desc": "Aus Wörtern erstellte Bilder sind leichter zu merken als Ziffernfolgen" },
           "item3": { "title": "Schnelleres Lernen", "desc": "Lange Zahlenfolgen in deutlich kürzerer Zeit auswendig lernen" },
           "item4": { "title": "Mentales Training", "desc": "Bietet ausgezeichnetes mentales Training und kann die allgemeine kognitive Funktion verbessern" },
-          "item5": { "title": "Praktische Anwendungen", "desc": "Nützlich zum Merken von Telefonnummern, PINs, wichtigen Daten und historischen Fakten" }
+          "item5": { "title": "Praktische Anwendungen", "desc": "Nützlich zum Merken von Telefonnummern, PINs, important dates, and historical facts" }
         },
         "practicalUses": {
           "heading": "Praktische Anwendungen",
@@ -175,6 +232,53 @@ const resources = {
         "footer": {
           "blogLink": "Visit Vidanov.com/blog"
         }
+      },
+
+      "flashcards": {
+        "title": "Karteikarten",
+        "manageCards": "Karten verwalten",
+        "studySession": "Lernsitzung",
+        "noCards": "Keine Karten zum Wiederholen",
+        "addMoreCards": "Fügen Sie mehr Karten aus dem Übersetzer hinzu, um mit dem Lernen zu beginnen",
+        "again": "Wiederholen",
+        "hard": "Schwer",
+        "good": "Gut",
+        "easy": "Einfach",
+        "ratingSubmitted": "Bewertung gespeichert",
+        "nextReviewMinutes": "Nächste Wiederholung in {{minutes}} Minuten",
+        "nextReview": "Nächste Wiederholung in {{days}} Tagen",
+        "cardDeleted": "Karte gelöscht",
+        "cardUpdated": "Karte aktualisiert",
+        "saveCard": "Als Karteikarte speichern",
+        "enterMeaning": "Geben Sie die Bedeutung für diese Nummer ein",
+        "cardSaved": "Karte erfolgreich gespeichert!",
+        "saveCardTitle": "Karte speichern",
+        "enterMeaningPrompt": "Bedeutung für diese Nummer eingeben",
+        "save": "Speichern",
+        "cancel": "Abbrechen",
+        "statistics": "Statistiken",
+        "totalCards": "Gesamtkarten",
+        "dueCards": "Jetzt fällig",
+        "masteredCards": "Geschätzt",
+        "learningCards": "Lernen",
+        "masterProgress": "Meisterschaftsfortschritt",
+        "averageEase": "Durchschnittliche Einfachheit",
+        "nextInMinutes": "Nächste: {{minutes}}m",
+        "interval": "Intervall: {{value}}",
+        "ease": "Einfachheit: {{value}}",
+        "learning": "Lernen",
+        "days": "{{count}} Tage",
+        "howToAdd": "Wie man Karteikarten hinzufügt",
+        "howToStep1": "Gehen Sie zur Übersetzerseite und geben Sie eine Zahl ein, die Sie lernen möchten",
+        "howToStep2": "Klicken Sie auf das Speichersymbol neben der Übersetzung, die Sie sich merken möchten",
+        "howToStep3": "Fügen Sie eine aussagekräftige Beschreibung hinzu, die Ihnen hilft, die Verbindung zwischen Zahl und Wort zu merken",
+        "aboutSystem": "Über das Lernsystem",
+        "aboutPoint1": "Die Karten verwenden gestaffelte Wiederholung - schwierige Karten sehen Sie häufiger, einfache seltener",
+        "aboutPoint2": "Neue Karten beginnen mit kurzen Intervallen (Minuten) und steigern sich allmählich zu Tagen, während Sie sie lernen",
+        "aboutPoint3": "Bewerten Sie Ihre Erinnerung ehrlich, damit das System die Wiederholungszeiten für optimales Lernen anpassen kann",
+        "saveCardSuccess": "Karte gespeichert!",
+        "cardAddedToStudy": "Karte wurde zu deinem Lernstapel hinzugefügt",
+        "lateReview": "Wiederholung war {{days}} Tage überfällig. {{next}}"
       }
     }
   },
@@ -186,6 +290,7 @@ const resources = {
       "navHelp": "Ayuda",
       "copyButton": "Copiar",
       "copiedTooltip": "¡Copiado!",
+      "navFlashcards": "Tarjetas",
 
       // Translator Page
       "translator": {
@@ -224,8 +329,12 @@ const resources = {
           "variationsDesc": "Se encontraron {{count}} posibles variaciones"
         },
         "noTranslations": {
-          "title": "No se encontraron traducciones",
+          "title": "Nose encontraron traducciones",
           "description": "Intente una entrada diferente o verifique el sistema de idioma seleccionado"
+        },
+        "copied": {
+          "title": "Copiado!",
+          "description": "Texto copiado al portapapeles"
         }
       },
 
@@ -239,7 +348,7 @@ const resources = {
           },
           "howItWorks": {
             "heading": "Cómo Funciona",
-            "p1": "Cada dígito (0-9) está asociado con sonidos consonánticos específicos. Al agregar vocales entre estas consonantes, podemos crear palabras memorables que representen números."
+            "p1": "Cada dígito (0-9) está asociado con sonidos consonantiques específicos. Al agregar vocales entre estas consonantes, podemos crear palabras memorables que representen números."
           }
         },
         "benefits": {
@@ -263,6 +372,54 @@ const resources = {
         "footer": {
           "blogLink": "Visita Vidanov.com/blog"
         }
+      },
+
+      "flashcards": {
+        "title": "Tarjetas",
+        "manageCards": "Gestionar tarjetas",
+        "studySession": "Sesión de estudio",
+        "noCards": "No hay tarjetas para repasar",
+        "addMoreCards": "Añade más tarjetas desde el traductor para empezar a estudiar",
+        "again": "De nuevo",
+        "hard": "Difícil",
+        "good": "Bien",
+        "easy": "Fácil",
+        "ratingSubmitted": "Calificación guardada",
+        "nextReviewMinutes": "Próxima revisión en {{minutes}} minutos",
+        "nextReview": "Próxima revisión en {{days}} días",
+        "cardDeleted": "Tarjeta eliminada",
+        "cardUpdated": "Tarjeta actualizada",
+        "editCard": "Editar tarjeta",
+        "enterMeaning": "Ingresar significado",
+        "saveChanges": "Guardar cambios",
+        "saveCard": "Guardar como Tarjeta",
+        "saveCardTitle": "Guardar Tarjeta",
+        "enterMeaningPrompt": "Ingresar significado para este número",
+        "save": "Guardar",
+        "cancel": "Cancelar",
+        "statistics": "Estadísticas",
+        "totalCards": "Tarjetas totales",
+        "dueCards": "Por vencer",
+        "masteredCards": "Aprendidas",
+        "learningCards": "Aprendiendo",
+        "masterProgress": "Progreso de maestría",
+        "averageEase": "Facilité moyenne",
+        "nextInMinutes": "Próximo: {{minutes}}m",
+        "interval": "Intervalo: {{value}}",
+        "ease": "Facilité: {{value}}",
+        "learning": "Aprendiendo",
+        "days": "{{count}} días",
+        "howToAdd": "Cómo añadir tarjetas",
+        "howToStep1": "Ve a la página del traductor e ingresa un número que quieras aprender",
+        "howToStep2": "Haz clic en el icono de guardar junto a cualquier traducción que quieras recordar",
+        "howToStep3": "Añade una descripción significativa que te ayude a recordar la conexión entre el número y la palabra",
+        "aboutSystem": "Sobre el sistema de aprendizaje",
+        "aboutPoint1": "Las tarjetas utilizan repetición espaciada - verás les tarjetas difíciles con más frecuencia y les fáciles con menos frecuencia",
+        "aboutPoint2": "Las tarjetas nuevas comienzan con intervalos cortos (minutos) y aumentan gradualmente a días mientras las aprendes",
+        "aboutPoint3": "Califica tu recuerdo honestamente para ayudar al sistema a ajustar los tiempos de repaso para un aprendizaje óptimo",
+        "saveCardSuccess": "¡Tarjeta guardada!",
+        "cardAddedToStudy": "La tarjeta se ha añadido a tu mazo de estudio",
+        "lateReview": "Review was {{days}} days late. {{next}}"
       }
     }
   },
@@ -274,6 +431,7 @@ const resources = {
       "navHelp": "Aide",
       "copyButton": "Copier",
       "copiedTooltip": "Copié !",
+      "navFlashcards": "Cartes",
 
       // Translator Page
       "translator": {
@@ -314,6 +472,10 @@ const resources = {
         "noTranslations": {
           "title": "Aucune traduction trouvée",
           "description": "Essayez une entrée différente ou vérifiez le système de langue sélectionné"
+        },
+        "copied": {
+          "title": "Copié !",
+          "description": "Texte copié dans le presse-papiers"
         }
       },
 
@@ -351,6 +513,46 @@ const resources = {
         "footer": {
           "blogLink": "Visitez Vidanov.com/blog"
         }
+      },
+
+      "flashcards": {
+        "title": "Cartes mémoire",
+        "manageCards": "Gérer les cartes",
+        "studySession": "Session d'étude",
+        "noCards": "Aucune carte à réviser",
+        "addMoreCards": "Ajoutez plus de cartes depuis le traducteur pour commencer à étudier",
+        "again": "À revoir",
+        "hard": "Difficile",
+        "good": "Bien",
+        "easy": "Facile",
+        "ratingSubmitted": "Évaluation enregistrée",
+        "nextReviewMinutes": "Prochaine révision dans {{minutes}} minutes",
+        "nextReview": "Prochaine révision dans {{days}} jours",
+        "cardDeleted": "Carte supprimée",
+        "cardUpdated": "Carte mise à jour",
+        "editCard": "Modifier la carte",
+        "enterMeaning": "Entrer le sens",
+        "saveChanges": "Enregistrer les modifications",
+        "saveCard": "Enregistrer comme Carte",
+        "saveCardTitle": "Enregistrer Carte",
+        "enterMeaningPrompt": "Entrer le sens pour ce nombre",
+        "save": "Enregistrer",
+        "cancel": "Annuler",
+        "statistics": "Statistiques",
+        "totalCards": "Cartes totales",
+        "dueCards": "À échéance",
+        "masteredCards": "Apprises",
+        "learningCards": "En cours d'apprentissage",
+        "masterProgress": "Progression de maîtrise",
+        "averageEase": "Facilité moyenne",
+        "nextInMinutes": "Prochaine: {{minutes}}m",
+        "interval": "Intervalle: {{value}}",
+        "ease": "Facilité: {{value}}",
+        "learning": "En cours d'apprentissage",
+        "days": "{{count}} jours",
+        "saveCardSuccess": "Carte enregistrée !",
+        "cardAddedToStudy": "La carte a été ajoutée à votre paquet d'étude",
+        "lateReview": "Review was {{days}} days late. {{next}}"
       }
     }
   },
@@ -362,6 +564,7 @@ const resources = {
       "navHelp": "Aiuto",
       "copyButton": "Copia",
       "copiedTooltip": "Copiato!",
+      "navFlashcards": "Carte",
 
       // Translator Page
       "translator": {
@@ -402,6 +605,10 @@ const resources = {
         "noTranslations": {
           "title": "Nessuna traduzione trovata",
           "description": "Prova un input diverso o controlla il sistema di lingua selezionato"
+        },
+        "copied": {
+          "title": "Copiato!",
+          "description": "Testo copiato nel portapapere"
         }
       },
 
@@ -420,8 +627,8 @@ const resources = {
         },
         "benefits": {
           "heading": "Vantaggi del Sistema Maggiore",
-          "item1": { "title": "Memoria Migliorata", "desc": "Converte numeri astratti in parole concrete e visualizzabili" },
-          "item2": { "title": "Ritenzione a Lungo Termine", "desc": "Le immagini create dalle parole sono più facili da ricordare delle sequenze di cifre" },
+          "item1": { "title": "Memoria Migliorata", "desc": "Converte numeri astratti in parole concrete e visualizabili" },
+          "item2": { "title": "Ritenzione a Lungo Termine", "desc": "Le immagini created dalle parole sono più facili da ricordare delle sequenze di cifre" },
           "item3": { "title": "Apprendimento Più Veloce", "desc": "Memorizza lunghe sequenze di numeri in molto meno tempo" },
           "item4": { "title": "Esercizio Mentale", "desc": "Fornisce un ottimo allenamento mentale e può migliorare la funzione cognitiva generale" },
           "item5": { "title": "Applicazioni Pratiche", "desc": "Utile per ricordare numeri di telefono, PIN, date importanti e fatti storici" }
@@ -432,13 +639,53 @@ const resources = {
           "item1": "Pi fino a migliaia di cifre",
           "item2": "Lunghi numeri di carte di credito",
           "item3": "Rubriche telefoniche",
-          "item4": "Date storiche",
-          "item5": "Costanti matematiche"
+          "item4": "Dat historycznych",
+          "item5": "Stałych matematycznych"
         },
         "tryItButton": "Provalo Tu Stesso",
         "footer": {
           "blogLink": "Visita Vidanov.com/blog"
         }
+      },
+
+      "flashcards": {
+        "title": "Carte",
+        "manageCards": "Gestisci carte",
+        "studySession": "Sessione di studio",
+        "noCards": "Nessuna carta da ripassare",
+        "addMoreCards": "Aggiungi più carte dal traduttore per iniziare a studiare",
+        "again": "Di nuovo",
+        "hard": "Difficile",
+        "good": "Bene",
+        "easy": "Fácil",
+        "ratingSubmitted": "Valutazione salvata",
+        "nextReviewMinutes": "Prossima ripetizione tra {{minutes}} minuti",
+        "nextReview": "Prossima ripetizione tra {{days}} giorni",
+        "cardDeleted": "Carta eliminata",
+        "cardUpdated": "Carta aggiornata",
+        "editCard": "Modifica carta",
+        "enterMeaning": "Inserisci significato",
+        "saveChanges": "Salva modifiche",
+        "saveCard": "Salva come Carta",
+        "saveCardTitle": "Salva Carta",
+        "enterMeaningPrompt": "Inserisci significato per questo numero",
+        "save": "Salva",
+        "cancel": "Annulla",
+        "statistics": "Statistiche",
+        "totalCards": "Carte totali",
+        "dueCards": "Per scadenza",
+        "masteredCards": "Imparate",
+        "learningCards": "In corso d'apprendimento",
+        "masterProgress": "Progressione di maestria",
+        "averageEase": "Facilità media",
+        "nextInMinutes": "Próximo: {{minutes}}m",
+        "interval": "Intervallo: {{value}}",
+        "ease": "Facilidade: {{value}}",
+        "learning": "In corso d'apprendimento",
+        "days": "{{count}} giorni",
+        "saveCardSuccess": "Carta salvata!",
+        "cardAddedToStudy": "La carta è stata aggiunta al tuo mazzo di studio",
+        "lateReview": "Review was {{days}} days late. {{next}}"
       }
     }
   },
@@ -450,6 +697,7 @@ const resources = {
       "navHelp": "Помощь",
       "copyButton": "Копировать",
       "copiedTooltip": "Скопировано!",
+      "navFlashcards": "Карточки",
 
       // Translator Page
       "translator": {
@@ -490,6 +738,10 @@ const resources = {
         "noTranslations": {
           "title": "Переводы не найдены",
           "description": "Попробуйте другой ввод или проверьте выбранную языковую систему"
+        },
+        "copied": {
+          "title": "Скопировано!",
+          "description": "Текст скопирован в буфер обмена"
         }
       },
 
@@ -525,7 +777,7 @@ const resources = {
           "item1": { "title": "Улучшенная память", "desc": "Преобразует абстрактные числа в конкретные, визуализируемые слова" },
           "item2": { "title": "Долгосрочное запоминание", "desc": "Образы, созданные из слов, легче запомнить, чем последовательности цифр" },
           "item3": { "title": "Быстрое обучение", "desc": "Запоминание длинных последовательностей чисел за значительно меньшее время" },
-          "item4": { "title": "Умственная тренировка", "desc": "Обеспечивает отличную умственную нагрузку и может улучшить общую когнитивную функцию" },
+          "item4": { "title": "Умственная тренировка", "desc": "Обеспечивает отличный тренинг умственный и может улучшить общую когнитивную функцию" },
           "item5": { "title": "Практическое применение", "desc": "Полезно для запоминания телефонных номеров, PIN-кодов, важных дат и исторических фактов" }
         },
         "practicalUses": {
@@ -541,26 +793,404 @@ const resources = {
         "footer": {
           "blogLink": "Посетите Vidanov.com/blog"
         }
+      },
+
+      "flashcards": {
+        "title": "Карточки",
+        "manageCards": "Управление карточками",
+        "studySession": "Сессия изучения",
+        "noCards": "Нет карточек для повторения",
+        "addMoreCards": "Добавьте больше карточек из переводчика, чтобы начать изучение",
+        "again": "Снова",
+        "hard": "Сложно",
+        "good": "Хорошо",
+        "easy": "Легко",
+        "ratingSubmitted": "Оценка сохранена",
+        "nextReviewMinutes": "Следующее повторение через {{minutes}} минут",
+        "nextReview": "Следующее повторение через {{days}} дней",
+        "cardDeleted": "Карточка удалена",
+        "cardUpdated": "Карточка обновлена",
+        "editCard": "Редактировать карточку",
+        "enterMeaning": "Введите значение",
+        "saveChanges": "Сохранить изменения",
+        "saveCard": "Сохранить как карточку",
+        "saveCardTitle": "Сохранить карточку",
+        "enterMeaningPrompt": "Введите значение для этого числа",
+        "save": "Сохранить",
+        "cancel": "Отмена",
+        "statistics": "Статистика",
+        "totalCards": "Всего карточек",
+        "dueCards": "К выполнению",
+        "masteredCards": "Выученные",
+        "learningCards": "В процессе изучения",
+        "masterProgress": "Прогресс мастерства",
+        "averageEase": "Средняя легкость",
+        "nextInMinutes": "Следующая: {{minutes}}m",
+        "interval": "Интервал: {{value}}",
+        "ease": "Легкость: {{value}}",
+        "learning": "В процессе изучения",
+        "days": "{{count}} дней",
+        "saveCardSuccess": "Карточка сохранена!",
+        "cardAddedToStudy": "Карточка добавлена в колоду для изучения",
+        "lateReview": "Повторение просрочено на {{days}} дней. {{next}}"
+      }
+    }
+  },
+  pl: {
+    translation: {
+      // General UI
+      "appTitle": "Magiczne Liczby",
+      "navHome": "Strona główna",
+      "navHelp": "Pomoc",
+      "copyButton": "Kopiuj",
+      "copiedTooltip": "Skopiowano!",
+      "navFlashcards": "Fiszki",
+
+      // Translator Page
+      "translator": {
+        "title": "Tłumacz Liczb",
+        "description": "Wprowadź liczbę, a my przetłumaczymy ją na słowa używając systemu fonetycznego. Możesz użyć separatorów jak spacje, myślniki, przecinki itp. do grupowania cyfr.",
+        "inputPlaceholder": "Wprowadź liczby (np. 123-45)...",
+        "inputAriaLabel": "Wprowadź liczby do przetłumaczenia",
+        "languageSelectorAriaLabel": "Wybierz język systemu tłumaczenia",
+        "buttonTranslate": "Tłumacz",
+        "buttonTranslating": "Tłumaczenie...",
+        "resultsTitle": "Możliwe tłumaczenia (znaleziono {{count}})",
+        "customSeparatorLabel": "Używanie własnych separatorów",
+        "defaultGroupingLabel": "Standardowe grupowanie 2-cyfrowe",
+        "groupingLabel": "Grupowanie",
+        "table": {
+          "headerNumber": "Liczba",
+          "headerWord": "Słowo"
+        },
+        "showMoreButton": "Pokaż więcej wariantów"
+      },
+
+      // Toast Messages
+      "toast": {
+        "noDigits": {
+          "title": "Nie znaleziono cyfr",
+          "description": "Wprowadź liczby do przetłumaczenia"
+        },
+        "emptyInput": {
+          "title": "Puste pole",
+          "description": "Wprowadź liczby do przetłumaczenia"
+        },
+        "translationComplete": {
+          "title": "Tłumaczenie zakończone",
+          "customDesc": "Użyto własnych separatorów dla pierwszego tłumaczenia. Znaleziono {{count}} dodatkowych wariantów.",
+          "defaultDesc": "Pokazano standardowe grupowanie 2-cyfrowe. Znaleziono {{count}} dodatkowych wariantów.",
+          "variationsDesc": "Znaleziono {{count}} możliwych wariantów"
+        },
+        "noTranslations": {
+          "title": "Nie znaleziono tłumaczeń",
+          "description": "Spróbuj innego wpisu lub sprawdź wybrany system językowy"
+        },
+        "copied": {
+          "title": "Skopiowano!",
+          "description": "Tekst skopiowany do schowka"
+        }
+      },
+
+      "flashcards": {
+        "title": "Fiszki",
+        "manageCards": "Zarządzaj fiszkami",
+        "studySession": "Sesja nauki",
+        "noCards": "Brak fiszek do powtórki",
+        "addMoreCards": "Dodaj więcej fiszek z tłumacza, aby rozpocząć naukę",
+        "again": "Powtórz",
+        "hard": "Trudne",
+        "good": "Dobre",
+        "easy": "Łatwe",
+        "ratingSubmitted": "Ocena zapisana",
+        "nextReviewMinutes": "Następna powtórka za {{minutes}} minut",
+        "nextReview": "Następna powtórka za {{days}} dni",
+        "cardDeleted": "Fiszka usunięta",
+        "cardUpdated": "Fiszka zaktualizowana",
+        "editCard": "Edytuj fiszkę",
+        "enterMeaning": "Wprowadź znaczenie",
+        "saveChanges": "Zapisz zmiany",
+        "saveCard": "Zapisz jako fiszkę",
+        "saveCardTitle": "Zapisz fiszkę",
+        "enterMeaningPrompt": "Wprowadź znaczenie dla tej liczby",
+        "save": "Zapisz",
+        "cancel": "Anuluj",
+        "statistics": "Statystyki",
+        "totalCards": "Wszystkie fiszki",
+        "dueCards": "Do powtórki",
+        "masteredCards": "Opanowane",
+        "learningCards": "W trakcie nauki",
+        "masterProgress": "Postęp opanowania",
+        "averageEase": "Średnia łatwość",
+        "nextInMinutes": "Następna: {{minutes}}m",
+        "interval": "Interwał: {{value}}",
+        "ease": "Łatwość: {{value}}",
+        "learning": "W trakcie nauki",
+        "days": "{{count}} dni",
+        "saveCardSuccess": "Fiszka zapisana!",
+        "cardAddedToStudy": "Fiszka została dodana do twojej talii",
+        "lateReview": "Powtórka spóźniona o {{days}} dni. {{next}}",
+        "numberTranslations": {
+          "0": ["n", "m"],
+          "1": ["t", "d"],
+          "2": ["n"],
+          "3": ["m"],
+          "4": ["r"],
+          "5": ["l"],
+          "6": ["j", "ż", "sz"],
+          "7": ["k", "g"],
+          "8": ["f", "w"],
+          "9": ["p", "b"],
+          "description": "Polski system fonetyczny używa następujących dźwięków spółgłoskowych:",
+          "examples": {
+            "title": "Przykłady:",
+            "items": [
+              "0 = n, m (nos, mak)",
+              "1 = t, d (tama, dom)",
+              "2 = n (noc)",
+              "3 = m (most)",
+              "4 = r (rak)",
+              "5 = l (las)",
+              "6 = j, ż, sz (jama, żaba, szum)",
+              "7 = k, g (kot, góra)",
+              "8 = f, w (fala, woda)",
+              "9 = p, b (pies, bat)"
+            ]
+          }
+        },
+        "enterNumber": "Wprowadź liczbę",
+        "translate": "Tłumacz",
+        "clear": "Wyczyść",
+        "copy": "Kopiuj",
+        "copied": "Skopiowano!",
+        "saveAsFlashcard": "Zapisz jako fiszkę"
+      },
+
+      "help": {
+        "majorSystem": {
+          "title": "Przewodnik po Systemie Głównym",
+          "whatIsIt": {
+            "heading": "Czym jest System Główny?",
+            "p1": "System Główny to technika mnemotechniczna używana do zamiany liczb w słowa. Działa poprzez przekształcanie cyfr w dźwięki spółgłoskowe, które następnie można łączyć z samogłoskami, tworząc łatwe do zapamiętania słowa."
+          },
+          "howItWorks": {
+            "heading": "Jak to działa",
+            "p1": "Każdej cyfrze (0-9) przypisane są określone dźwięki spółgłoskowe. Dodając samogłoski między te spółgłoski, możemy tworzyć łatwe do zapamiętania słowa reprezentujące liczby."
+          }
+        },
+        "benefits": {
+          "heading": "Korzyści z używania Systemu Głównego",
+          "item1": { "title": "Lepsza pamięć", "desc": "Zamienia abstrakcyjne liczby in konkretne, łatwe do wyobrażenia słowa" },
+          "item2": { "title": "Długotrwałe zapamiętywanie", "desc": "Obrazy stworzone ze słów są łatwiejsze do zapamiętania niż ciągi cyfr" },
+          "item3": { "title": "Szybsza nauka", "desc": "Zapamiętuj długie ciągi liczb w znacznie krótszym czasie" },
+          "item4": { "title": "Ćwiczenie umysłu", "desc": "Zapewnia doskonały treino mentalny i może poprawić ogólne funkcje poznawcze" },
+          "item5": { "title": "Praktyczne zastosowania", "desc": "Przydatne do zapamiętywania numerów telefonów, PIN-ów, ważnych dat i faktów historycznych" }
+        },
+        "practicalUses": {
+          "heading": "Praktyczne zastosowania",
+          "p1": "Sportowcy pamięci używają tego systemu do zapamiętywania:",
+          "item1": "Liczby Pi do tysięcy miejsc po przecinku",
+          "item2": "Długich numerów kart kredytowych",
+          "item3": "Książek telefonicznych",
+          "item4": "Dat historycznych",
+          "item5": "Stałych matematycznych"
+        },
+        "tryItButton": "Wypróbuj sam",
+        "footer": {
+          "blogLink": "Odwiedź Vidanov.com/blog"
+        }
+      }
+    }
+  },
+  pt: {
+    translation: {
+      // General UI
+      "appTitle": "Números Mágicos",
+      "navHome": "Início",
+      "navHelp": "Ajuda",
+      "copyButton": "Copiar",
+      "copiedTooltip": "Copiado!",
+      "navFlashcards": "Cartões",
+
+      // Translator Page
+      "translator": {
+        "title": "Tradutor de Números",
+        "description": "Digite um número e nós o traduziremos em palavras usando um sistema fonético. Você pode usar separadores como espaços, hífens, vírgulas, etc. para agrupar os dígitos.",
+        "inputPlaceholder": "Digite números (ex., 123-45)...",
+        "inputAriaLabel": "Digite números para traduzir",
+        "languageSelectorAriaLabel": "Selecione o idioma do sistema de tradução",
+        "buttonTranslate": "Traduzir",
+        "buttonTranslating": "Traduzindo...",
+        "resultsTitle": "Traduções Possíveis ({{count}} encontradas)",
+        "customSeparatorLabel": "Usando seus separadores personalizados",
+        "defaultGroupingLabel": "Agrupamento padrão de 2 dígitos",
+        "groupingLabel": "Agrupamento",
+        "table": {
+          "headerNumber": "Número",
+          "headerWord": "Palavra"
+        },
+        "showMoreButton": "Mostrar Mais Variações"
+      },
+
+      // Toast Messages
+      "toast": {
+        "noDigits": {
+          "title": "Nenhum dígito encontrado",
+          "description": "Por favor, digite alguns números para traduzir"
+        },
+        "emptyInput": {
+          "title": "Entrada vazia",
+          "description": "Por favor, digite alguns números para traduzir"
+        },
+        "translationComplete": {
+          "title": "Tradução concluída",
+          "customDesc": "Usando seus separadores personalizados para a primeira tradução. Encontradas {{count}} variações adicionais.",
+          "defaultDesc": "Mostrando agrupamento padrão de 2 dígitos primeiro. Encontradas {{count}} variações adicionais.",
+          "variationsDesc": "Encontradas {{count}} variações possíveis"
+        },
+        "noTranslations": {
+          "title": "Nenhuma tradução encontrada",
+          "description": "Tente uma entrada diferente ou verifique o sistema de idioma selecionado"
+        },
+        "copied": {
+          "title": "Copiado!",
+          "description": "Texto copiado para a área de transferência"
+        }
+      },
+
+      "flashcards": {
+        "title": "Cartões",
+        "manageCards": "Gerenciar cartões",
+        "studySession": "Sessão de estudo",
+        "noCards": "Nenhum cartão para revisar",
+        "addMoreCards": "Adicione mais cartões do tradutor para começar a estudar",
+        "again": "Novamente",
+        "hard": "Difícil",
+        "good": "Bom",
+        "easy": "Fácil",
+        "ratingSubmitted": "Avaliação salva",
+        "nextReviewMinutes": "Próxima revisão em {{minutes}} minutos",
+        "nextReview": "Próxima revisão em {{days}} dias",
+        "cardDeleted": "Cartão excluído",
+        "cardUpdated": "Cartão atualizado",
+        "editCard": "Editar cartão",
+        "enterMeaning": "Digite o significado",
+        "saveChanges": "Salvar alterações",
+        "saveCard": "Salvar como cartão",
+        "saveCardTitle": "Salvar cartão",
+        "enterMeaningPrompt": "Digite o significado para este número",
+        "save": "Salvar",
+        "cancel": "Cancelar",
+        "statistics": "Estatísticas",
+        "totalCards": "Total de cartões",
+        "dueCards": "Para revisar",
+        "masteredCards": "Dominados",
+        "learningCards": "Aprendendo",
+        "masterProgress": "Progresso de domínio",
+        "averageEase": "Facilidade média",
+        "nextInMinutes": "Próximo: {{minutes}}m",
+        "interval": "Intervalo: {{value}}",
+        "ease": "Facilidade: {{value}}",
+        "learning": "Aprendendo",
+        "days": "{{count}} dias",
+        "saveCardSuccess": "Cartão salvo!",
+        "cardAddedToStudy": "O cartão foi adicionado ao seu baralho de estudo",
+        "lateReview": "Revisão atrasada em {{days}} dias. {{next}}",
+        "numberTranslations": {
+          "0": ["s", "z"],
+          "1": ["t", "d"],
+          "2": ["n"],
+          "3": ["m"],
+          "4": ["r"],
+          "5": ["l"],
+          "6": ["ch", "j"],
+          "7": ["c", "g"],
+          "8": ["f", "v"],
+          "9": ["p", "b"],
+          "description": "O sistema fonético português usa os seguintes sons consonantais:",
+          "examples": {
+            "title": "Exemplos:",
+            "items": [
+              "0 = s, z (sal, zelo)",
+              "1 = t, d (tela, dado)",
+              "2 = n (nada)",
+              "3 = m (mala)",
+              "4 = r (rato)",
+              "5 = l (lua)",
+              "6 = ch, j (chave, janela)",
+              "7 = c, g (casa, gato)",
+              "8 = f, v (faca, vaca)",
+              "9 = p, b (pato, bola)"
+            ]
+          }
+        },
+        "enterNumber": "Digite o número",
+        "translate": "Traduzir",
+        "clear": "Limpar",
+        "copy": "Copiar",
+        "copied": "Copiado!",
+        "saveAsFlashcard": "Salvar como cartão"
+      },
+
+      "help": {
+        "majorSystem": {
+          "title": "Guia do Sistema Principal",
+          "whatIsIt": {
+            "heading": "O que é o Sistema Principal?",
+            "p1": "O Sistema Principal é uma técnica mnemônica usada para converter números em palavras. Funciona convertendo dígitos em sons consonantais, que podem então ser combinados com vogais para formar palavras memoráveis."
+          },
+          "howItWorks": {
+            "heading": "Como funciona",
+            "p1": "Cada dígito (0-9) está associado a sons consonantais específicos. Adicionando vogais entre essas consoantes, podemos criar palavras memoráveis que representam números."
+          }
+        },
+        "benefits": {
+          "heading": "Benefícios do Sistema Principal",
+          "item1": { "title": "Memória aprimorada", "desc": "Converte números abstratos em palavras concretas e visualizáveis" },
+          "item2": { "title": "Retenção de longo prazo", "desc": "Imagens criadas a partir de palavras são mais fáceis de lembrar do que sequências de dígitos" },
+          "item3": { "title": "Aprendizado mais rápido", "desc": "Memorize longas sequências de números em muito menos tempo" },
+          "item4": { "title": "Exercício mental", "desc": "Fornece excelente treino mental e pode melhorar a função cognitiva geral" },
+          "item5": { "title": "Aplicações práticas", "desc": "Útil para lembrar números de telefone, PINs, datas importantes e fatos históricos" }
+        },
+        "practicalUses": {
+          "heading": "Usos práticos",
+          "p1": "Atletas da memória usam este sistema para memorizar:",
+          "item1": "Pi até milhares de dígitos",
+          "item2": "Longos números de cartão de crédito",
+          "item3": "Listas telefônicas",
+          "item4": "Datas históricas",
+          "item5": "Constantes matemáticas"
+        },
+        "tryItButton": "Experimente você mesmo",
+        "footer": {
+          "blogLink": "Visite Vidanov.com/blog"
+        }
       }
     }
   }
 };
 
+// Get the saved language or default to 'en'
+const savedLanguage = localStorage.getItem('preferredLanguage') || 'en';
+
 i18n
   .use(initReactI18next)
   .init({
     resources,
+    lng: savedLanguage, // Use the saved language as default
     fallbackLng: 'en',
-    supportedLngs: ['en', 'de', 'es', 'fr', 'it', 'ru'],
+    supportedLngs: ['en', 'de', 'es', 'fr', 'it', 'ru', 'pl', 'pt'],
     interpolation: {
       escapeValue: false
     },
     detection: {
-      order: ['path'],
+      order: ['localStorage', 'path', 'navigator'],
+      lookupLocalStorage: 'preferredLanguage',
       lookupFromPathIndex: 1,
-      caches: [],
-      checkWhitelist: true
-    }
+      caches: ['localStorage']
+    },
+    load: 'languageOnly',
+    debug: true
   });
 
 export default i18n;

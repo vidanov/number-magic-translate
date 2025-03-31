@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 
 const NumberTranslator: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -19,6 +21,9 @@ const NumberTranslator: React.FC = () => {
   const [hoveredTranslationIndex, setHoveredTranslationIndex] = useState<number | null>(null);
   const variationsRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const [selectedTranslation, setSelectedTranslation] = useState<{ number: string; translation: string } | null>(null);
+  const [flashcardMeaning, setFlashcardMeaning] = useState("");
+  const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
   
   // Get the current language from i18n and find the corresponding language object
   const getCurrentLanguage = (): Language => {
@@ -498,6 +503,42 @@ const NumberTranslator: React.FC = () => {
     }
   };
 
+  const handleSaveAsFlashcard = (number: string, translation: string) => {
+    setSelectedTranslation({ number, translation });
+    setFlashcardMeaning("");
+    setIsSaveDialogOpen(true);
+  };
+
+  const saveFlashcard = () => {
+    if (!selectedTranslation || !flashcardMeaning.trim()) return;
+
+    const newCard: Flashcard = {
+      id: crypto.randomUUID(),
+      number: selectedTranslation.number,
+      translation: selectedTranslation.translation,
+      meaning: flashcardMeaning.trim(),
+      language: i18n.language,
+      nextReview: Date.now(),
+      easeFactor: 2.5,
+      interval: 0,
+      repetitions: 0,
+      isFirstDay: true,
+      minutesInterval: 0
+    };
+
+    const existingCards = JSON.parse(localStorage.getItem('flashcards') || '[]');
+    localStorage.setItem('flashcards', JSON.stringify([...existingCards, newCard]));
+
+    toast({
+      title: t('flashcards.saveCardSuccess'),
+      description: t('flashcards.cardAddedToStudy')
+    });
+
+    setIsSaveDialogOpen(false);
+    setSelectedTranslation(null);
+    setFlashcardMeaning("");
+  };
+
   // No longer needed as we use the UI language
 
   const renderNumberWordTable = (variation: { tokens: string[]; translation: string }) => {
@@ -598,10 +639,62 @@ const NumberTranslator: React.FC = () => {
                 </div>
 
                 <div className="flex items-center justify-between relative">
-                  <div className="text-lg flex-grow mr-2">
+                  <div className="text-lg flex-grow mr-4 min-w-0">
                     {variation.translation}
                   </div>
-                  <CopyButton value={variation.translation} />
+                  <div className="flex items-center gap-2 shrink-0 ml-4 opacity-100">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleSaveAsFlashcard(inputText, variation.translation)}
+                      className="text-muted-foreground hover:text-accent h-8 w-8"
+                      aria-label={t('flashcards.saveCard')}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                        <polyline points="17 21 17 13 7 13 7 21" />
+                        <polyline points="7 3 7 8 15 8" />
+                      </svg>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        navigator.clipboard.writeText(variation.translation);
+                        toast({
+                          title: t('toast.copied.title'),
+                          description: t('toast.copied.description'),
+                        });
+                      }}
+                      className="text-muted-foreground hover:text-accent h-8 w-8"
+                      aria-label={t('translator.copyAriaLabel')}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                      </svg>
+                    </Button>
+                  </div>
                 </div>
 
                 {hoveredTranslationIndex === index && (
@@ -623,6 +716,43 @@ const NumberTranslator: React.FC = () => {
           )}
         </div>
       )}
+
+      <Dialog open={isSaveDialogOpen} onOpenChange={setIsSaveDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('flashcards.saveCardTitle')}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>{t('flashcards.enterMeaningPrompt')}</Label>
+              <Input
+                value={flashcardMeaning}
+                onChange={(e) => setFlashcardMeaning(e.target.value)}
+                placeholder={t('flashcards.enterMeaningPrompt')}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && flashcardMeaning.trim()) {
+                    saveFlashcard();
+                  }
+                }}
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setIsSaveDialogOpen(false)}
+              >
+                {t('flashcards.cancel')}
+              </Button>
+              <Button
+                onClick={saveFlashcard}
+                disabled={!flashcardMeaning.trim()}
+              >
+                {t('flashcards.save')}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

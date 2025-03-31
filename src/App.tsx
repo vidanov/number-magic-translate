@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useParams, useLocation } from "react-router-dom";
 import Index from "./pages/Index";
 import Help from "./pages/Help";
+import Flashcards from "./pages/Flashcards";
 import NotFound from "./pages/NotFound";
 import { useTranslation } from 'react-i18next';
 import { useEffect } from 'react';
@@ -38,41 +39,62 @@ const LanguageRoute = ({ children }: { children: React.ReactNode }) => {
   const { i18n } = useTranslation();
   
   useEffect(() => {
-    // Only change language if it's different from current and is a supported language
-    if (lang && i18n.language !== lang && availableLanguages.includes(lang)) {
+    if (lang && i18n.language !== lang) {
       i18n.changeLanguage(lang);
     }
-  }, [lang, i18n, location.pathname]);
+  }, [lang, i18n]);
 
   return <>{children}</>;
 };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-        <div className="min-h-screen flex flex-col">
-          <div className="flex-grow">
-            <Routes>
-              {/* Redirect root to default language */}
-              <Route path="/" element={<Navigate to="/en" replace />} />
-              
-              {/* Language-specific routes */}
-              <Route path="/:lang" element={<LanguageRoute><Index /></LanguageRoute>} />
-              <Route path="/:lang/help" element={<LanguageRoute><Help /></LanguageRoute>} />
-              <Route path="/:lang/translate/:number" element={<LanguageRoute><Index /></LanguageRoute>} />
-              
-              {/* Catch-all route */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+// Separate component for the routes
+const AppRoutes = () => {
+  const { i18n } = useTranslation();
+  const location = useLocation();
+  
+  useEffect(() => {
+    // If we're at the root path, get the saved language
+    if (location.pathname === '/') {
+      const savedLang = localStorage.getItem('preferredLanguage') || 'en';
+      // The language will be handled by the Navigate component
+      localStorage.setItem('preferredLanguage', savedLang);
+    }
+  }, [location.pathname]);
+
+  return (
+    <Routes>
+      {/* Redirect root to default language */}
+      <Route path="/" element={<Navigate to={`/${localStorage.getItem('preferredLanguage') || 'en'}`} replace />} />
+      
+      {/* Language-specific routes */}
+      <Route path="/:lang" element={<LanguageRoute><Index /></LanguageRoute>} />
+      <Route path="/:lang/help" element={<LanguageRoute><Help /></LanguageRoute>} />
+      <Route path="/:lang/flashcards" element={<LanguageRoute><Flashcards /></LanguageRoute>} />
+      <Route path="/:lang/translate/:number" element={<LanguageRoute><Index /></LanguageRoute>} />
+      
+      {/* Catch-all route */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+};
+
+const App = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <BrowserRouter>
+          <Toaster />
+          <Sonner />
+          <div className="min-h-screen flex flex-col">
+            <div className="flex-grow">
+              <AppRoutes />
+            </div>
+            <Footer />
           </div>
-          <Footer />
-        </div>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
